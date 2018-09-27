@@ -1,0 +1,16 @@
+{
+    "title": "where:10086",
+    "query": {
+        "WHERE": 10086,
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "Not implemented."
+}

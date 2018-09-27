@@ -1,0 +1,38 @@
+{
+    "title": "courses_audit : non-empty string",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "AND":[
+                        {
+                            "GT": {
+                                "courses_avg":50
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_uuid":"5374"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "EQ": {
+                        "courses_audit":[]
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "Not implemented."
+}

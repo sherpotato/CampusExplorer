@@ -1,0 +1,31 @@
+{
+    "title": "wildcards start with *",
+    "query": {
+        "WHERE": {
+            "AND":[
+                {
+                    "GT": {
+                        "courses_avg":99
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept":"*p*"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result":[
+        {"courses_dept":"cnps","courses_id":"574","courses_avg":99.19}
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "title": "Invalid Key in Columns",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "LT":{
+                    "courses_avg":99.1
+                }
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "coursesid",
+                "courses_avg",
+                "courses_instructor",
+                "courses_title",
+                "courses-pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "Not implemented."
+}

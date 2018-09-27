@@ -1,0 +1,28 @@
+{
+    "title": "No and or",
+    "query": {
+        "WHERE": {
+            "EQ":{
+                "courses_avg":90
+            },
+            "NOT":{
+                "GT": {
+                    "courses_avg":99
+                }
+            },
+            "GT":{
+                "courses_avg":80
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "Not implemented."
+}

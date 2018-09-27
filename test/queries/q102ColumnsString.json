@@ -1,0 +1,17 @@
+{
+    "title": "empty {} in column",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "LT":{
+                    "courses_avg":99.1
+                }
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": "potato"
+        }
+    },
+    "isQueryValid": false,
+    "result": "Not implemented."
+}

@@ -1,0 +1,31 @@
+{
+    "title": "And-Default case (Invalid filter)",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "NOT": {
+                            "GT": {
+                                "courses_avg":95.2
+                            }
+                    }
+                },
+                {
+                    "InvalidKey": {
+                        "courses_avg":95.1
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "Not implemented."
+}

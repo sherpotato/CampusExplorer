@@ -1,0 +1,34 @@
+{
+    "title": "And-Not",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "NOT": {
+                            "GT": {
+                                "courses_avg":95.2
+                            }
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_avg":95.1
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result":[
+        {"courses_dept":"etec","courses_id":"521","courses_avg":95.1},
+        {"courses_dept":"etec","courses_id":"521","courses_avg":95.1}
+    ]
+}

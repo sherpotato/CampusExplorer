@@ -1,0 +1,44 @@
+{
+    "title": "Double And",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "OR":[
+                        {
+                            "GT": {
+                                "courses_avg":90
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_dept":"adhe"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "LT": {
+                        "courses_avg":70
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result":[
+        {"courses_dept":"adhe","courses_id":"329","courses_avg":67.5},
+        {"courses_dept":"adhe","courses_id":"329","courses_avg":67.95},
+        {"courses_dept":"adhe","courses_id":"412","courses_avg":68.29},
+        {"courses_dept":"adhe","courses_id":"412","courses_avg":68.89},
+        {"courses_dept":"adhe","courses_id":"412","courses_avg":69.96}
+    ]
+}

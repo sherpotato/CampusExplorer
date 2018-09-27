@@ -1,0 +1,18 @@
+{
+    "title": "SELECT all filter WHERE avg !< 99.1 ORDER BY avg",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "LT":{
+                    "courses_avg":99.1
+                }
+            }
+        },
+        "OPTIONS": {
+
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result":"Not implemented."
+}

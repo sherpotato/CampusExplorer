@@ -1,0 +1,30 @@
+{
+    "title": "wildcards start with *",
+    "query": {
+        "WHERE": {
+            "AND":[
+                {
+                    "GT": {
+                        "courses_avg":97
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept":"*c"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result":[
+        {"courses_dept":"educ","courses_id":"500","courses_avg":97.5}]
+}
