@@ -51,15 +51,15 @@ export default class InsightFacade implements IInsightFacade {
                 try {
                     // try to open courses folder
                     unzippedFiles.folder("courses").forEach((relativePath: string, file: any) => {
-                        try {
-                            // If it is a JSON file, convert it to text file
-                            promiseList.push(file.async("text"));
-                            // Log.trace("iterating through each" + relativePath);
-                        } catch {
-                            let e = new InsightError("Catch a non-JSON file in 'courses' folder");
-                            reject(e);
-                        }
-                    });
+                            try {
+                                // If it is a JSON file, convert it to text file
+                                promiseList.push(file.async("text"));
+                                // Log.trace("iterating through each" + relativePath);
+                            } catch {
+                                let e = new InsightError("Catch a non-JSON file in 'courses' folder");
+                                reject(e);
+                            }
+                        });
                 } catch {
                     let e = new InsightError("no 'courses' folder");
                     reject(e);
@@ -117,9 +117,9 @@ export default class InsightFacade implements IInsightFacade {
                         }
                         const fs = require("fs");   // import file system
                         try {
-                            fs.mkdir("./datasets", () => {
+                            fs.mkdir("./test/data", () => {
                                 const courseString = JSON.stringify(validJSON, null, " ");
-                                fs.writeFile("./datasets/" + id + ".json", courseString);
+                                fs.writeFile("./test/data/" + id + ".json", courseString);
                                 this.datasetId.push(id);
                                 fulfill(this.datasetId);
                             });
@@ -128,6 +128,9 @@ export default class InsightFacade implements IInsightFacade {
                         }
 
                     }
+                }).catch((e) => {
+                    e = new InsightError("No valid JSON.");
+                    reject(e);
                 });
             }).catch((e) => {
                 e = new InsightError("Fail to unzip the file.");
