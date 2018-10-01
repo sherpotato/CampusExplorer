@@ -24,6 +24,23 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        emptyCase: "./test/data/emptyCase.zip",
+        brokenJSON: "./test/data/brokenJSON.zip",
+        correct: "./test/data/correct.zip",
+        zeroCourseSection: "./test/data/zeroCourseSection.zip",
+        nestedFolder: "./test/data/nestedFolder.zip",
+        nonZip: "./test/data/nonZip.docx",
+        docInCourses: "./test/data/docInCourses.zip",
+        emptyJSON: "./test/data/emptyJSON.zip",
+        nonJSON: "./test/data/nonJSON.zip",
+        noCoursesFolder: "./test/data/noCoursesFolder.zip",
+        multipleFolder: "./test/data/multipleFolder.zip",
+        manyType: "./test/data/manyType.zip",
+        noValidSection: "./test/data/noValidSection.zip",
+        noValidInCourses: "./test/data/noValidInCourses.zip",
+        missFieldValid: "./test/data/missFieldValid.zip",
+        missFieldInvalid: "./test/data/missFieldInvalid.zip",
+        correctDataSet: "./test/data/correctDataSet.zip",
     };
 
     let insightFacade: InsightFacade;

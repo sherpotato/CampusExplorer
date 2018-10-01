@@ -1,0 +1,26 @@
+[
+ {
+  "missFieldInvalid_dept": "phys",
+  "missFieldInvalid_id": "560",
+  "missFieldInvalid_avg": 80.57,
+  "missFieldInvalid_instructor": "merminga, nikolitsa",
+  "missFieldInvalid_title": "particle acclrtr",
+  "missFieldInvalid_pass": 7,
+  "missFieldInvalid_fail": 0,
+  "missFieldInvalid_audit": 0,
+  "missFieldInvalid_uuid": "33673",
+  "missFieldInvalid_year": 2010
+ },
+ {
+  "missFieldInvalid_dept": "phys",
+  "missFieldInvalid_id": "560",
+  "missFieldInvalid_avg": 80.57,
+  "missFieldInvalid_instructor": "",
+  "missFieldInvalid_title": "particle acclrtr",
+  "missFieldInvalid_pass": 7,
+  "missFieldInvalid_fail": 0,
+  "missFieldInvalid_audit": 0,
+  "missFieldInvalid_uuid": "33674",
+  "missFieldInvalid_year": 2010
+ }
+]
