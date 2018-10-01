@@ -28,9 +28,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         brokenJSON: "./test/data/brokenJSON.zip",
         correct: "./test/data/correct.zip",
         zeroCourseSection: "./test/data/zeroCourseSection.zip",
-        nestedFolder: "./test/data/nestedFolder.zip",
-        nonZip: "./test/data/nonZip.docx",
-        docInCourses: "./test/data/docInCourses.zip",
+        nonZip: "./test/data/nonZip.pdf",
+        pdfInCourses: "./test/data/pdfInCourses.zip",
         emptyJSON: "./test/data/emptyJSON.zip",
         nonJSON: "./test/data/nonJSON.zip",
         noCoursesFolder: "./test/data/noCoursesFolder.zip",
@@ -97,7 +96,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("Length of the datasets after add one", async () => {
+    it("listDatasets", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(1);
         expect(response[0].id).to.deep.equal("courses");
@@ -201,22 +200,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    // test case : should fail to add a dataset with nested folder
-    it("Should fail to add a dataset with nested folder", async () => {
-        const id: string = "nestedFolder";
-        let response: string[];
-
-        try {
-            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response).to.be.instanceOf(InsightError);
-        }
-    });
-
     // test case : should fail to add a non zip file dataset, e.g docx
-    it("Should fail to add a non zip file dataset, e.g docx", async () => {
+    it("Should fail to add a non zip file dataset, e.g pdf", async () => {
         const id: string = "nonZip";
         let response: string[];
 
@@ -229,9 +214,9 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    // test case : should fail to add a dataset with only docx in courses folder
-    it("Should fail to add a dataset with only docx in courses folder", async () => {
-        const id: string = "docInCourses";
+    // test case : should fail to add a dataset with only pdf in courses folder
+    it("Should fail to add a dataset with only pdf in courses folder", async () => {
+        const id: string = "pdfInCourses";
         let response: string[];
 
         try {
@@ -320,7 +305,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("Length of the datasets after add one", async () => {
+    it("listDatasets", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(3);
         expect(response[0].id).to.deep.equal("courses");
@@ -370,7 +355,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("Length of the datasets after add one", async () => {
+    it("listDatasets", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(4);
         expect(response[0].id).to.deep.equal("courses");
@@ -408,7 +393,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("Length of the datasets after add one", async () => {
+    it("listDatasets", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(3);
         expect(response[0].id).to.deep.equal("courses");
@@ -473,11 +458,11 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response2 = err;
         } finally {
             expect(response1).to.be.equal([id1]);
-            expect(response2).to.be.equal([id2]);
+            expect(response2).to.be.equal([id1, id2]);
         }
     });
 
-    it("Length of the datasets after add one", async () => {
+    it("listDatasets", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(5);
         expect(response[0].id).to.deep.equal("courses");

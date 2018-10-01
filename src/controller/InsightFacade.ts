@@ -32,13 +32,17 @@ export default class InsightFacade implements IInsightFacade {
                 reject(e);
             }
             // check if dataset is invalid dataset type
-            if (kind === InsightDatasetKind.Rooms) {
+            // if (kind === InsightDatasetKind.Rooms) {
+            //     let e = new InsightError("invalid dataset type");
+            //     reject(e);
+            // }
+            // check if dataset is other type
+            if (!(kind === InsightDatasetKind.Courses)) {
                 let e = new InsightError("invalid dataset type");
                 reject(e);
             }
 
             // check if dataset already exist
-            // To Do: ask TA!!!!!!!!
             for (let key of this.datasetId) {
                 if (key === id) {
                     let e = new InsightError("dataset already existed");
@@ -128,9 +132,6 @@ export default class InsightFacade implements IInsightFacade {
                         }
 
                     }
-                }).catch((e) => {
-                    e = new InsightError("No valid JSON.");
-                    reject(e);
                 });
             }).catch((e) => {
                 e = new InsightError("Fail to unzip the file.");
