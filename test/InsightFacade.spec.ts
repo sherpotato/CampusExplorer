@@ -280,11 +280,11 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.deep.equal(["courses", id]);
         }
     });
 
-    it("Length of the datasets after add one", async () => {
+    it("listDatasets", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(2);
         expect(response[0].id).to.deep.equal("courses");
@@ -301,7 +301,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.deep.equal(["courses", "multipleFolder", id]);
         }
     });
 
@@ -351,7 +351,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.deep.equal(["courses", "multipleFolder", "manyType", id]);
         }
     });
 
@@ -457,8 +457,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response1 = err;
             response2 = err;
         } finally {
-            expect(response1).to.be.equal([id1]);
-            expect(response2).to.be.equal([id1, id2]);
+            expect(response1).to.deep.equal(["courses", "multipleFolder", "manyType", id1, id2]);
+            expect(response2).to.deep.equal(["courses", "multipleFolder", "manyType", id1, id2]);
         }
     });
 
@@ -472,8 +472,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
         expect(response[4].id).to.deep.equal("correctDataSet");
     });
 
-    // This is an example of a pending test. Add a callback function to make the test run.
-    it("Should remove the courses dataset");
 });
 
 // This test suite dynamically generates tests from the JSON files in test/queries.

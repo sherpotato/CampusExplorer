@@ -1,5 +1,5 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError} from "./IInsightFacade";
+import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import * as JSZip from "jszip";
 
 /**
@@ -10,10 +10,12 @@ import * as JSZip from "jszip";
 export default class InsightFacade implements IInsightFacade {
 
     private datasetId: string[];
+    private validDataset: Map<string, any[]>;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
         this.datasetId = new Array();
+        this.validDataset = new Map<string, any[]>();
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
@@ -29,24 +31,20 @@ export default class InsightFacade implements IInsightFacade {
             // check if dataset id is empty or null or invalid dataset type
             if (id === "" || id === null ) {
                 let e = new InsightError("dataset id is empty or null");
-                reject(e);
+                return reject(e);
             }
             // check if dataset is invalid dataset type
-            // if (kind === InsightDatasetKind.Rooms) {
-            //     let e = new InsightError("invalid dataset type");
-            //     reject(e);
-            // }
-            // check if dataset is other type
             if (!(kind === InsightDatasetKind.Courses)) {
                 let e = new InsightError("invalid dataset type");
-                reject(e);
+                return reject(e);
             }
 
             // check if dataset already exist
+            // To Do: ask TA!!!!!!!!
             for (let key of this.datasetId) {
                 if (key === id) {
                     let e = new InsightError("dataset already existed");
-                    reject(e);
+                    return reject(e);
                 }
             }
 
@@ -55,15 +53,15 @@ export default class InsightFacade implements IInsightFacade {
                 try {
                     // try to open courses folder
                     unzippedFiles.folder("courses").forEach((relativePath: string, file: any) => {
-                            try {
-                                // If it is a JSON file, convert it to text file
-                                promiseList.push(file.async("text"));
-                                // Log.trace("iterating through each" + relativePath);
-                            } catch {
-                                let e = new InsightError("Catch a non-JSON file in 'courses' folder");
-                                reject(e);
-                            }
-                        });
+                        try {
+                            // If it is a JSON file, convert it to text file
+                            promiseList.push(file.async("text"));
+                            // Log.trace("iterating through each" + relativePath);
+                        } catch {
+                            let e = new InsightError("Catch a non-JSON file in 'courses' folder");
+                            reject(e);
+                        }
+                    });
                 } catch {
                     let e = new InsightError("no 'courses' folder");
                     reject(e);
@@ -117,18 +115,20 @@ export default class InsightFacade implements IInsightFacade {
                         }
                         if (validJSON.length === 0) {
                             let e = new InsightError("Dataset is not valid.");
-                            reject(e);
-                        }
-                        const fs = require("fs");   // import file system
-                        try {
-                            fs.mkdir("./test/data", () => {
-                                const courseString = JSON.stringify(validJSON, null, " ");
-                                fs.writeFile("./test/data/" + id + ".json", courseString);
-                                this.datasetId.push(id);
-                                fulfill(this.datasetId);
-                            });
-                        } catch {
-                            reject(new InsightError("Fail to add this dataset into cache!"));
+                            return reject(e);
+                        } else {
+                            const fs = require("fs");   // import file system
+                            try {
+                                fs.mkdir("./data", () => {
+                                    const courseString = JSON.stringify(validJSON, null, " ");
+                                    fs.writeFile("./data/" + id + ".json", courseString);
+                                    this.datasetId.push(id);
+                                    this.validDataset.set(id, validJSON);
+                                    fulfill(this.datasetId);
+                                });
+                            } catch {
+                                reject(new InsightError("Fail to add this dataset into cache!"));
+                            }
                         }
 
                     }
@@ -141,7 +141,35 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-        return Promise.reject("Not implemented.");
+        return new Promise((fulfill, reject) => {
+            if (id === "" || id === null || id === undefined) {
+                let e = new InsightError("Undefined dataset ID.");
+                reject(e);
+            }
+            // check if dataset already exist, remove this id
+            let newArray = [];
+            for (let key of this.datasetId) {
+                if (key !== id) {
+                    newArray.push(key);
+                }
+            }
+            if (this.datasetId.length === newArray.length) {
+                let e = new NotFoundError("Unexisted ID.");
+                reject(e);
+            }
+            this.datasetId = newArray;
+            this.validDataset.delete(id);
+
+            const fs = require("fs");   // import file system
+            fs.unlink("./data/" + id + ".json", (err: any) => {
+                if (err) {
+                    return reject("failed to delete the file");
+                } else {
+                    return fulfill(id);
+                }
+            });
+
+        });
     }
 
     public performQuery(query: any): Promise <any[]> {
@@ -149,6 +177,18 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
-        return Promise.reject("Not implemented.");
+        let returnSet: InsightDataset[] = [];
+        // const pA: any[] = [];
+        return new Promise<InsightDataset[]>((fulfill) => {
+            for (const key of this.datasetId) {
+                let set = {
+                    id: key,
+                    kind: InsightDatasetKind.Courses,
+                    numRows: this.validDataset.get(key).length,
+                };
+                returnSet.push(set);
+            }
+            return fulfill(returnSet);
+        });
     }
 }
