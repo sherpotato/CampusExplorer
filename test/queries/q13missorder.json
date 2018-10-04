@@ -1,5 +1,5 @@
 {
-    "title": "SELECT all filter WHERE avg !< 99.1 ORDER BY avg",
+    "title": "debug",
     "query": {
         "WHERE": {
             "NOT": {

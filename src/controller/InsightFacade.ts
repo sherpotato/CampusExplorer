@@ -2,6 +2,7 @@ import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import * as JSZip from "jszip";
 import {PerformQueryHelper} from "./PerformQueryHelper";
+
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -179,7 +180,7 @@ export default class InsightFacade implements IInsightFacade {
                 try {
                     results = helper.dealWithQuery(query);
                 } catch (e) {
-                    reject(new InsightError("ASK TA ERROR in performQuery"));
+                    reject(e);
                 }
                 return fulfill(results);
             } else {

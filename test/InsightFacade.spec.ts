@@ -472,6 +472,27 @@ describe("InsightFacade Add/Remove Dataset", function () {
         expect(response[4].id).to.deep.equal("correctDataSet");
     });
 
+    it("small dataset", async () => {
+        let response = await insightFacade.performQuery({
+            WHERE: {},
+            OPTIONS: {
+                COLUMNS: [
+                    "correctDataSet_dept",
+                    "correctDataSet_id",
+                    "correctDataSet_avg",
+                    "correctDataSet_instructor",
+                    "correctDataSet_title",
+                    "correctDataSet_pass",
+                    "correctDataSet_fail",
+                    "correctDataSet_audit",
+                    "correctDataSet_uuid",
+                    "correctDataSet_year"
+
+                ]
+            }
+        });
+    });
+
 });
 
 // This test suite dynamically generates tests from the JSON files in test/queries.

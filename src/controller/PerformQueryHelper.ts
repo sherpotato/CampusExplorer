@@ -1,4 +1,6 @@
 import {InsightError} from "./IInsightFacade";
+import {error} from "util";
+import Log from "../Util";
 
 enum CourseKey {
     Dept = "dept",
@@ -31,7 +33,7 @@ enum NumberKey {
 
 export class PerformQueryHelper {
     private idName: string = "";
-
+// TODO
     constructor() {/**/}
 
     public isQueryValidOrNot(query: any): boolean {
@@ -85,8 +87,33 @@ export class PerformQueryHelper {
 
     }
 
-    public dealWithQuery(query: any): any {
-        // TODO
+    public dealWithQuery(query: any): any[] {
+        const fs = require("fs");
+        let result: any[] = [];
+        try {
+            // Log.trace(this.idName);
+            const datasetString = fs.readFileSync("./data/" + this.idName + ".json", "utf8");
+            // Log.trace(datasetString);
+            const data = JSON.parse(datasetString);
+            // for (let item of data) {
+            //    Log.trace(JSON.stringify(item));
+            // }
+            if (!Array.isArray(data)) {
+                throw new InsightError("dataset is not an array");
+            } else if (data.length > 5000) {
+                throw new InsightError("> 5000");
+            } else {
+                return data;
+            }
+            // if (!Array.isArray(data)) {
+            //     throw new InsightError("dataset is not an array");
+            // } else {
+            //     return data;
+            // }
+
+        } catch (e) {
+            throw e;
+        }
     }
 
     private isItQuery(q: any): boolean {
@@ -173,6 +200,8 @@ export class PerformQueryHelper {
             } else {
                 return columns.includes(order);
             }
+        } else {
+            return true;
         }
     }
 
