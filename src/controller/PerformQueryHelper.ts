@@ -93,20 +93,44 @@ export class PerformQueryHelper {
         return !(typeof q === "number" || typeof q === "string" || Array.isArray(q));
     }
 
-    private isNumberKey(numberKey: string): boolean {
+    private isNumberKey(inputNumberKey: string): boolean {
         try {
-            let prifix = numberKey.split("_")[0];
-            let postfix = numberKey.split("_")[1];
-            if (!(this.idName === prifix)) {
+            let prefix = inputNumberKey.split("_")[0];
+            let postfix = inputNumberKey.split("_")[1];
+            if (!(this.idName === prefix)) {
                 return false;
             } else {
-                if (!(Object.values(numberKey).includes(postfix))) {
+                if (!(Object.values(NumberKey).includes(postfix))) {
                     return false;
+                } else {
+                    return true;
                 }
             }
         } catch (e) {
             return false;
         }
+    }
+
+    private isStringKey(inputStringKey: string): boolean {
+        try {
+            let prefix = inputStringKey.split("_")[0];
+            let postfix = inputStringKey.split("_")[1];
+            if (!(this.idName === prefix)) {
+                return false;
+            } else {
+                if (!(Object.values(StringKey).includes(postfix))) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        } catch (e) {
+            return false;
+        }
+    }
+
+    private  isValidStringInIS(inputString: string): boolean {
+        return /^((\*)?[^*]*(\*)?)$/.test(inputString);
     }
 
     private isValidInOPTIONS(options: any): boolean {
@@ -116,15 +140,15 @@ export class PerformQueryHelper {
         if (!(Array.isArray(columns) && columns.length > 0)) {
             return false;
         } else {
-            for (let i in columns) {
+            for (let column of columns) {
                 // check each item is String
-                if (!(typeof columns[i] === "string")) {
+                if (!(typeof column === "string")) {
                     return false;
                 } else {
                     // check if it's valid course key
                     try {
-                        let prifix = columns[i].split("_")[0];
-                        let postfix = columns[i].split("_")[1];
+                        let prifix = column.split("_")[0];
+                        let postfix = column.split("_")[1];
                         if (this.idName.length === 0) {
                             this.idName = prifix;
                         } else if (!(this.idName === prifix)) {
@@ -177,8 +201,49 @@ export class PerformQueryHelper {
                 } else if (Object.keys(stuffInComparator).length !== 1) {
                     return false;
                 } else {
-                    return (this.isNumberKey(stuffInComparator[0])
-                        && (typeof stuffInComparator[Object.keys(mComparator)[0]] === "number"));
+                    return (this.isNumberKey(Object.keys(stuffInComparator)[0])
+                        && (typeof stuffInComparator[Object.keys(stuffInComparator)[0]] === "number"));
+                }
+            } else if (where.hasOwnProperty("AND") || where.hasOwnProperty("OR")) {
+                const logic = Object.keys(where)[0];
+                const stuffInLogic = where[logic];
+                // check type of stuff
+                if (!Array.isArray(stuffInLogic)) {
+                    return false;
+                } else if (stuffInLogic.length < 1) {
+                    return false;
+                } else {
+                    for (let q of stuffInLogic) {
+                        // check empty filter
+                        if (Object.keys(q).length === 0) {
+                            return false;
+                        }
+                        if (!this.isValidWHERE(q)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            } else if (where.hasOwnProperty("IS")) {
+                const stuffInIs = where["IS"];
+                if (!this.isItQuery(stuffInIs)) {
+                    return false;
+                } else if (Object.keys(stuffInIs).length !== 1) {
+                    return false;
+                } else if ((typeof stuffInIs[Object.keys(stuffInIs)[0]] !== "string")) {
+                    return false;
+                } else {
+                    return (this.isStringKey(Object.keys(stuffInIs)[0])
+                        && (this.isValidStringInIS(stuffInIs[Object.keys(stuffInIs)[0]])));
+                }
+            } else if (where.hasOwnProperty("NOT")) {
+                const stuffInNOT = where["NOT"];
+                if (!this.isItQuery(stuffInNOT)) {
+                    return false;
+                } else if (Object.keys(stuffInNOT).length !== 1) {
+                    return false;
+                } else {
+                    return this.isValidWHERE(stuffInNOT);
                 }
             } else {
                 return false;
