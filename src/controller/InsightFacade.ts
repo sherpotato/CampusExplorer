@@ -1,7 +1,7 @@
 import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import * as JSZip from "jszip";
-
+import {PerformQueryHelper} from "./PerformQueryHelper";
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -168,12 +168,24 @@ export default class InsightFacade implements IInsightFacade {
                     return fulfill(id);
                 }
             });
-
         });
     }
 
     public performQuery(query: any): Promise <any[]> {
-        return Promise.reject("Not implemented.");
+        const helper = new PerformQueryHelper();
+        let results: any[] = [];
+        return new Promise((fulfill, reject) => {
+            if (helper.isQueryValidOrNot(query)) {
+                try {
+                    results = helper.dealWithQuery(query);
+                } catch (e) {
+                    reject(new InsightError("ASK TA ERROR in performQuery"));
+                }
+                return fulfill(results);
+            } else {
+                return reject(new InsightError("Query is not valid"));
+            }
+        });
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
