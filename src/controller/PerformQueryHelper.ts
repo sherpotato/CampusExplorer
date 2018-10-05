@@ -169,20 +169,14 @@ export class PerformQueryHelper {
     }
 
     private intersection(rs1: any[], rs2: any[]): any[] {
-
-        if (rs1.length === 0) {
-            return rs1;
+        let results: any[] = [];
+        const set1 = new Set();
+        for (let eachSection of rs1) {
+            set1.add(eachSection);
         }
-        const results: any = [];
-        const object: any = {};
-        let value: string;
-        for (let i in rs1) {
-            object[JSON.stringify(rs1[i])] = true;
-        }
-        for (let j in rs2) {
-            value = JSON.stringify(rs2[j]);
-            if (value in object) {
-                results.push(JSON.parse(value));
+        for (let eachSec of rs2) {
+            if (set1.has(eachSec)) {
+                results.push(eachSec);
             }
         }
         return results;
@@ -205,13 +199,27 @@ export class PerformQueryHelper {
         return results;
     }
 
+    private union(rs1: any[], rs2: any[]): any[] {
+        let results: any[] = [];
+        const unionSec = new Set();
+        for (let eachSection of rs1) {
+            unionSec.add(eachSection);
+        }
+        for (let eachSec of rs2) {
+            unionSec.add(eachSec);
+        }
+        for (let eachSet of unionSec) {
+            results.push(eachSet);
+        }
+        return results;
+    }
+
     private ISHelper(filter: any): any[] {
         let results: any[] = [];
         let substr: string;
         const stuffInIS = filter["IS"];
         const keyInIS = Object.keys(stuffInIS)[0];
         const selectString = stuffInIS[keyInIS];
-        // if (selectString.startwith('*')) ;
         if (selectString === "*" || selectString === "**") {
             results = this.realSections;
         } else {
