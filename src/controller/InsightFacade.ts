@@ -30,7 +30,7 @@ export default class InsightFacade implements IInsightFacade {
             const validCourse: { [section: string]: any } = [];
 
             // check if dataset id is empty or null or invalid dataset type
-            if (id === "" || id === null ) {
+            if (id === "" || id === null) {
                 let e = new InsightError("dataset id is empty or null");
                 return reject(e);
             }
@@ -70,7 +70,7 @@ export default class InsightFacade implements IInsightFacade {
 
                 Promise.all(promiseList).then((allJSON: any) => {
                     // Log.trace("dealing with all promise...");
-                    if ( kind === InsightDatasetKind.Courses) {
+                    if (kind === InsightDatasetKind.Courses) {
                         for (const eachCourse of allJSON) {
                             try {
                                 let readableJSON = JSON.parse(eachCourse)["result"];
@@ -89,7 +89,7 @@ export default class InsightFacade implements IInsightFacade {
                                             typeof eachSection.id.toString() === "string" &&
                                             typeof year === "number") {
                                             // Log.trace("Section Keys' Type checked");
-                                            const validSection: { [key: string]: string | number} = {
+                                            const validSection: { [key: string]: string | number } = {
                                                 // TO DO: ASK TA!!!
                                                 [id + "_dept"]: eachSection.Subject,
                                                 [id + "_id"]: eachSection.Course,
@@ -172,15 +172,25 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    public performQuery(query: any): Promise <any[]> {
-        const helper = new PerformQueryHelper();
+    public performQuery(query: any): Promise<any[]> {
+        const helper = new PerformQueryHelper("");
         let results: any[] = [];
         return new Promise((fulfill, reject) => {
             if (helper.isQueryValidOrNot(query)) {
                 try {
-                    results = helper.dealWithQuery(query);
+                    let zhunID = helper.idName;
+                    // if cache does not have the dataset, then load from disk
+                    if (! this.validDataset.has(zhunID)) {
+                        const fs = require("fs");
+                        const datasetString = fs.readFileSync("./data/" + zhunID + ".json", "utf8");
+                        const data = JSON.parse(datasetString);
+                        this.datasetId.push(zhunID);
+                        this.validDataset.set(zhunID, data);
+                    }
+                    let ds = this.validDataset.get(zhunID);
+                    results = helper.dealWithQuery(query, ds);
                 } catch (e) {
-                    reject(e);
+                    reject(new InsightError("fail to read or perform"));
                 }
                 return fulfill(results);
             } else {

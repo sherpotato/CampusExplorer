@@ -32,9 +32,11 @@ enum NumberKey {
 }
 
 export class PerformQueryHelper {
-    private idName: string = "";
+    public idName: string;
 // TODO
-    constructor() {/**/}
+    constructor(id: string) {
+        this.idName = id;
+    }
 
     public isQueryValidOrNot(query: any): boolean {
         try {
@@ -87,32 +89,18 @@ export class PerformQueryHelper {
 
     }
 
-    public dealWithQuery(query: any): any[] {
-        const fs = require("fs");
-        let result: any[] = [];
+    public dealWithQuery(query: any, ds: any[]): any[] {
+        let results: any[] = [];
         try {
-            // Log.trace(this.idName);
-            const datasetString = fs.readFileSync("./data/" + this.idName + ".json", "utf8");
-            // Log.trace(datasetString);
-            const data = JSON.parse(datasetString);
-            // for (let item of data) {
-            //    Log.trace(JSON.stringify(item));
-            // }
-            if (!Array.isArray(data)) {
+            if (!Array.isArray(ds)) {
                 throw new InsightError("dataset is not an array");
-            } else if (data.length > 5000) {
+            } else if (results.length > 5000) {
                 throw new InsightError("> 5000");
             } else {
-                return data;
+                return results;
             }
-            // if (!Array.isArray(data)) {
-            //     throw new InsightError("dataset is not an array");
-            // } else {
-            //     return data;
-            // }
-
         } catch (e) {
-            throw e;
+            throw new InsightError("fail to perform query");
         }
     }
 
