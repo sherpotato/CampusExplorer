@@ -33,6 +33,8 @@ enum NumberKey {
 
 export class PerformQueryHelper {
     public idName: string;
+    private realSections: any[] = [];
+
 // TODO
     constructor(id: string) {
         this.idName = id;
@@ -92,9 +94,9 @@ export class PerformQueryHelper {
     public dealWithQuery(query: any, ds: any[]): any[] {
         let results: any[] = [];
         try {
-            if (!Array.isArray(ds)) {
-                throw new InsightError("dataset is not an array");
-            } else if (results.length > 5000) {
+            this.realSections = ds;
+            results = this.whereHelper(query["WHERE"], ds);
+            if (results.length > 5000) {
                 throw new InsightError("> 5000");
             } else {
                 return results;
@@ -102,6 +104,148 @@ export class PerformQueryHelper {
         } catch (e) {
             throw new InsightError("fail to perform query");
         }
+    }
+
+    private whereHelper(where: any, ds: any[]): any[] {
+        let results: any[] = [];
+        if (Object.keys(where).length === 0) {
+            results = this.realSections;
+        } else if (where.hasOwnProperty("LT")
+            || where.hasOwnProperty("GT")
+            || where.hasOwnProperty("EQ")) {
+            results = this.mComparatorHelper(where);
+        } else if (where.hasOwnProperty("AND")) {
+            results = this.andHelper(where, ds);
+        } else if (where.hasOwnProperty("NOT")) {
+            results = this.negationHelper(where, ds);
+        } else if (where.hasOwnProperty("OR")) {
+            results = this.orHelper(where, ds);
+        } else {
+            results = this.ISHelper(where);
+        }
+        return results;
+    }
+
+    private mComparatorHelper(where: any): any[] {
+        let results: any[] = [];
+        let ds = this.realSections;
+        const mComparator = Object.keys(where)[0];
+        const stuffInComparator = where[mComparator];
+        let selectKey = Object.keys(stuffInComparator)[0];
+        let selectNumber = stuffInComparator[selectKey];
+        switch (mComparator) {
+            case "LT":
+                for (let eachSection of ds) {
+                    if (eachSection[selectKey] < selectNumber) {
+                        results.push(eachSection);
+                    }
+                }
+                break;
+            case "GT":
+                for (let eachSection of ds) {
+                    if (eachSection[selectKey] > selectNumber) {
+                        results.push(eachSection);
+                    }
+                }
+                break;
+            case "EQ":
+                for (let eachSection of ds) {
+                    if (eachSection[selectKey] === selectNumber) {
+                        results.push(eachSection);
+                    }
+                }
+                break;
+        }
+        return results;
+    }
+
+    private andHelper(filter: any, ds: any[]): any[] {
+        let results: any[] = this.realSections;
+        let and = filter["AND"];
+        for (let eachFilterInAnd of and) {
+            results = this.intersection(this.whereHelper(eachFilterInAnd, results), results);
+        }
+        return results;
+    }
+
+    private intersection(rs1: any[], rs2: any[]): any[] {
+
+        if (rs1.length === 0) {
+            return rs1;
+        }
+        const results: any = [];
+        const object: any = {};
+        let value: string;
+        for (let i in rs1) {
+            object[JSON.stringify(rs1[i])] = true;
+        }
+        for (let j in rs2) {
+            value = JSON.stringify(rs2[j]);
+            if (value in object) {
+                results.push(JSON.parse(value));
+            }
+        }
+        return results;
+    }
+
+    private negationHelper(filter: any, ds: any[]): any[] {
+        let results: any[] = [];
+        let not = filter["NOT"];
+        let hold = this.whereHelper(not, ds);
+        for (let item of this.realSections) {
+            if (!hold.includes(item)) {
+                results.push(item);
+            }
+        }
+        return results;
+    }
+
+    private orHelper(filter: any, ds: any[]): any[] {
+        let results: any[] = [];
+        return results;
+    }
+
+    private ISHelper(filter: any): any[] {
+        let results: any[] = [];
+        let substr: string;
+        const stuffInIS = filter["IS"];
+        const keyInIS = Object.keys(stuffInIS)[0];
+        const selectString = stuffInIS[keyInIS];
+        // if (selectString.startwith('*')) ;
+        if (selectString === "*" || selectString === "**") {
+            results = this.realSections;
+        } else {
+            if (selectString.startsWith("*") && selectString.endsWith("*")) {
+                substr = selectString.substring(1, selectString.length - 1);
+                for (let item of this.realSections) {
+                    if (item[keyInIS].includes(substr)) {
+                        results.push(item);
+                    }
+                }
+            } else if ((selectString.startsWith("*") && !selectString.endsWith("*"))) {
+                substr = selectString.substring(1);
+                for (let item of this.realSections) {
+                    if (item[keyInIS].startsWith(substr)) {
+                        results.push(item);
+                    }
+                }
+            } else if ((!selectString.startsWith("*") && selectString.endsWith("*"))) {
+                substr = selectString.substring(0, selectString.length - 1);
+                for (let item of this.realSections) {
+                    if (item[keyInIS].endsWith(substr)) {
+                        results.push(item);
+                    }
+                }
+            } else {
+                substr = selectString;
+                for (let item of this.realSections) {
+                    if (item[keyInIS] === substr) {
+                        results.push(item);
+                    }
+                }
+            }
+        }
+        return results;
     }
 
     private isItQuery(q: any): boolean {
@@ -144,7 +288,7 @@ export class PerformQueryHelper {
         }
     }
 
-    private  isValidStringInIS(inputString: string): boolean {
+    private isValidStringInIS(inputString: string): boolean {
         return /^((\*)?[^*]*(\*)?)$/.test(inputString);
     }
 
