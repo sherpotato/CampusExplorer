@@ -95,7 +95,8 @@ export class PerformQueryHelper {
         let results: any[] = [];
         try {
             this.realSections = ds;
-            results = this.whereHelper(query["WHERE"], ds);
+            results = this.whereHelper(query["WHERE"]);
+            results = this.optionHelper(query["OPTIONS"], results);
             if (results.length > 5000) {
                 throw new InsightError("> 5000");
             } else {
@@ -106,7 +107,41 @@ export class PerformQueryHelper {
         }
     }
 
-    private whereHelper(where: any, ds: any[]): any[] {
+    private optionHelper(options: any, filteredData: any[]): any[] {
+        // let results: any[] = [];
+        const columnArray = options["COLUMNS"];
+
+        for (let item of filteredData) {
+            for (let eachKey of Object.keys(item)) {
+                if (!columnArray.includes(eachKey)) {
+                    delete item[eachKey];
+                }
+            }
+        }
+        // TODO
+        if (options.hasOwnProperty("ORDER")) {
+            filteredData = this.sortHelper(filteredData, options["ORDER"]);
+        }
+
+        // let unmentionedIdKeys: string[] = [];
+        // for (const key of this.C)
+        return filteredData;
+    }
+
+    private sortHelper(filterData: any[], sort: string): any[] {
+        filterData.sort(function (a: any, b: any) {
+            if (a[sort] > b[sort]) {
+                return 1;
+            } else if (a[sort] < b[sort]) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+        return filterData;
+    }
+
+    private whereHelper(where: any): any[] {
         let results: any[] = [];
         if (Object.keys(where).length === 0) {
             results = this.realSections;
@@ -115,11 +150,11 @@ export class PerformQueryHelper {
             || where.hasOwnProperty("EQ")) {
             results = this.mComparatorHelper(where);
         } else if (where.hasOwnProperty("AND")) {
-            results = this.andHelper(where, ds);
+            results = this.andHelper(where);
         } else if (where.hasOwnProperty("NOT")) {
-            results = this.negationHelper(where, ds);
+            results = this.negationHelper(where);
         } else if (where.hasOwnProperty("OR")) {
-            results = this.orHelper(where, ds);
+            results = this.orHelper(where);
         } else {
             results = this.ISHelper(where);
         }
@@ -159,11 +194,11 @@ export class PerformQueryHelper {
         return results;
     }
 
-    private andHelper(filter: any, ds: any[]): any[] {
+    private andHelper(filter: any): any[] {
         let results: any[] = this.realSections;
         let and = filter["AND"];
         for (let eachFilterInAnd of and) {
-            results = this.intersection(this.whereHelper(eachFilterInAnd, results), results);
+            results = this.intersection(this.whereHelper(eachFilterInAnd), results);
         }
         return results;
     }
@@ -182,23 +217,6 @@ export class PerformQueryHelper {
         return results;
     }
 
-    private negationHelper(filter: any, ds: any[]): any[] {
-        let results: any[] = [];
-        let not = filter["NOT"];
-        let hold = this.whereHelper(not, ds);
-        for (let item of this.realSections) {
-            if (!hold.includes(item)) {
-                results.push(item);
-            }
-        }
-        return results;
-    }
-
-    private orHelper(filter: any, ds: any[]): any[] {
-        let results: any[] = [];
-        return results;
-    }
-
     private union(rs1: any[], rs2: any[]): any[] {
         let results: any[] = [];
         const unionSec = new Set();
@@ -214,12 +232,34 @@ export class PerformQueryHelper {
         return results;
     }
 
+    private negationHelper(filter: any): any[] {
+        let results: any[] = [];
+        let not = filter["NOT"];
+        let hold = this.whereHelper(not);
+        for (let item of this.realSections) {
+            if (!hold.includes(item)) {
+                results.push(item);
+            }
+        }
+        return results;
+    }
+
+    private orHelper(filter: any): any[] {
+        let results: any[] = [];
+        const orArray = filter["OR"];
+        for (let eachFilter of orArray) {
+            results = this.union(results, this.whereHelper(eachFilter));
+        }
+        return results;
+    }
+
     private ISHelper(filter: any): any[] {
         let results: any[] = [];
         let substr: string;
         const stuffInIS = filter["IS"];
         const keyInIS = Object.keys(stuffInIS)[0];
         const selectString = stuffInIS[keyInIS];
+        // if (selectString.startwith('*')) ;
         if (selectString === "*" || selectString === "**") {
             results = this.realSections;
         } else {
