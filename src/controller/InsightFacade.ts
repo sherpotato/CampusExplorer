@@ -188,9 +188,12 @@ export default class InsightFacade implements IInsightFacade {
                         this.validDataset.set(zhunID, data);
                     }
                     let ds = this.validDataset.get(zhunID);
-                    results = helper.dealWithQuery(query, ds);
+                    // const fs = require("fs");
+                    // const datasetString = fs.readFileSync("./data/" + zhunID + ".json", "utf8"); // TODO
+                    // const data = JSON.parse(datasetString);
+                    results = helper.dealWithQuery(query, ds, zhunID);
                 } catch (e) {
-                    reject(new InsightError("fail to read or perform"));
+                    return reject(new InsightError("fail to read or perform"));
                 }
                 return fulfill(results);
             } else {

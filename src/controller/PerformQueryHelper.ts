@@ -91,12 +91,26 @@ export class PerformQueryHelper {
 
     }
 
-    public dealWithQuery(query: any, ds: any[]): any[] {
+    public dealWithQuery(query: any, ds: any[], id: string): any[] {
         let results: any[] = [];
         try {
+            // Log.trace("AFTER:key.length:" + Object.keys(ds[0]).length.toString());
+
             this.realSections = ds;
+            this.idName = id;
             results = this.whereHelper(query["WHERE"]);
+            // for (let key of Object.keys(results)) {
+            //     Log.trace("BEFORE:" + key.toString());
+            // }
+
+            // Log.trace("BEFORE:" + Object.keys(results[0]).length.toString());
             results = this.optionHelper(query["OPTIONS"], results);
+            // Log.trace("AFTER:" + Object.keys(results[0]).length.toString());
+
+            // for (let key of Object.keys(results)) {
+            //     Log.trace("AFTER:" + key.toString());
+            // }
+
             if (results.length > 5000) {
                 throw new InsightError("> 5000");
             } else {
@@ -108,24 +122,35 @@ export class PerformQueryHelper {
     }
 
     private optionHelper(options: any, filteredData: any[]): any[] {
-        // let results: any[] = [];
+        let results: any[] = [];
         const columnArray = options["COLUMNS"];
+        const keyArray: any[] = [this.idName + "_dept", this.idName + "_id", this.idName + "_avg",
+            this.idName + "_instructor", this.idName + "_title", this.idName + "_pass",
+            this.idName + "_fail", this.idName + "_audit", this.idName + "_uuid", this.idName + "_year"];
 
-        for (let item of filteredData) {
-            for (let eachKey of Object.keys(item)) {
+        for (let item1 of filteredData) {
+            results.push(item1);
+        }
+        Log.trace("Before delete:key.length:" + Object.keys(results[0]).length.toString());
+
+        for (let item of results) {
+            for (let eachKey of keyArray) {
+                // Log.trace(eachKey);
                 if (!columnArray.includes(eachKey)) {
+                    // Log.trace("delete " + eachKey);
                     delete item[eachKey];
                 }
             }
         }
-        // TODO
+        Log.trace("After delete:key.length:" + Object.keys(results[0]).length.toString());
+
         if (options.hasOwnProperty("ORDER")) {
-            filteredData = this.sortHelper(filteredData, options["ORDER"]);
+            results = this.sortHelper(filteredData, options["ORDER"]);
         }
 
         // let unmentionedIdKeys: string[] = [];
         // for (const key of this.C)
-        return filteredData;
+        return results;
     }
 
     private sortHelper(filterData: any[], sort: string): any[] {
@@ -273,14 +298,14 @@ export class PerformQueryHelper {
             } else if ((selectString.startsWith("*") && !selectString.endsWith("*"))) {
                 substr = selectString.substring(1);
                 for (let item of this.realSections) {
-                    if (item[keyInIS].startsWith(substr)) {
+                    if (item[keyInIS].endsWith(substr)) {
                         results.push(item);
                     }
                 }
             } else if ((!selectString.startsWith("*") && selectString.endsWith("*"))) {
                 substr = selectString.substring(0, selectString.length - 1);
                 for (let item of this.realSections) {
-                    if (item[keyInIS].endsWith(substr)) {
+                    if (item[keyInIS].startsWith(substr)) {
                         results.push(item);
                     }
                 }

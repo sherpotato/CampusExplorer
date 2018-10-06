@@ -493,6 +493,41 @@ describe("InsightFacade Add/Remove Dataset", function () {
         });
     });
 
+    it("wildcards start with *", async () => {
+        let response: any[] = [];
+        try {
+            response = await insightFacade.performQuery({
+                WHERE: {
+                    AND: [
+                        {
+                            GT: {
+                                courses_avg: 97
+                            }
+                        },
+                        {
+                            IS: {
+                                courses_dept: "*c"
+                            }
+                        }
+                    ]
+                },
+                OPTIONS: {
+                    COLUMNS: [
+                        "courses_dept",
+                        "courses_id",
+                        "courses_avg"
+                    ],
+                    ORDER: "courses_avg"
+                }
+            });
+        } catch (e) {
+            response = e;
+        } finally {
+            expect (response).to.deep.equal([{courses_dept: "educ", courses_id: "500", courses_avg: 97.5}]);
+        }
+
+    });
+
 });
 
 // This test suite dynamically generates tests from the JSON files in test/queries.

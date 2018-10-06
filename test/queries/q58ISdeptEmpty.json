@@ -21,6 +21,6 @@
             "ORDER": "courses_avg"
         }
     },
-    "isQueryValid": false,
-    "result": "Not implemented."
+    "isQueryValid": true,
+    "result": []
 }
