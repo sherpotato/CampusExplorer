@@ -10,12 +10,12 @@ import {PerformQueryHelper} from "./PerformQueryHelper";
  */
 export default class InsightFacade implements IInsightFacade {
 
-    private datasetId: string[];
+    private datasetId: string[] = [];
     private validDataset: Map<string, any[]>;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
-        this.datasetId = new Array();
+        // this.datasetId = new Array();
         this.validDataset = new Map<string, any[]>();
     }
 
@@ -187,10 +187,25 @@ export default class InsightFacade implements IInsightFacade {
                         this.datasetId.push(zhunID);
                         this.validDataset.set(zhunID, data);
                     }
-                    let ds = this.validDataset.get(zhunID);
-                    results = helper.dealWithQuery(query, ds);
+                    // Log.trace("Before get:key.length:" +
+                    //     Object.keys(this.validDataset.get(zhunID)[0]).length.toString());
+                    let gs = this.validDataset.get(zhunID);
+                    // Log.trace("Before copy:key.length:" +
+                    //     Object.keys(this.validDataset.get(zhunID)[0]).length.toString());
+
+                    let cloned = JSON.parse(JSON.stringify(gs));        // copy array without reference
+                    // Log.trace("After copy:key.length:" +
+                    //     Object.keys(this.validDataset.get(zhunID)[0]).
+                    //     length.toString());
+                    results = helper.dealWithQuery(query, cloned, zhunID);
+                    // Log.trace("After dealwith:key.length:" +
+                    //     Object.keys(this.validDataset.get(zhunID)[0]).
+                    //     length.toString());
                 } catch (e) {
-                    reject(new InsightError("fail to read or perform"));
+                    // Log.trace("After dealwith:key.length:" +
+                    //     Object.keys(this.validDataset.get(helper.idName)[0]).
+                    //     length.toString());
+                    return reject(new InsightError("fail to read or perform"));
                 }
                 return fulfill(results);
             } else {

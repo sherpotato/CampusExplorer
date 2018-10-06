@@ -6,7 +6,8 @@
             "COLUMNS": [
                 "courses_dept",
                 "courses_id",
-                "courses_avg"
+                "courses_avg",
+                "courses_uuid"
             ],
             "ORDER": "courses_avg"
         }
