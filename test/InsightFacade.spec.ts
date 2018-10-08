@@ -472,61 +472,61 @@ describe("InsightFacade Add/Remove Dataset", function () {
         expect(response[4].id).to.deep.equal("correctDataSet");
     });
 
-    it("small dataset", async () => {
-        let response = await insightFacade.performQuery({
-            WHERE: {},
-            OPTIONS: {
-                COLUMNS: [
-                    "correctDataSet_dept",
-                    "correctDataSet_id",
-                    "correctDataSet_avg",
-                    "correctDataSet_instructor",
-                    "correctDataSet_title",
-                    "correctDataSet_pass",
-                    "correctDataSet_fail",
-                    "correctDataSet_audit",
-                    "correctDataSet_uuid",
-                    "correctDataSet_year"
+    // it("small dataset", async () => {
+    //     let response = await insightFacade.performQuery({
+    //         WHERE: {},
+    //         OPTIONS: {
+    //             COLUMNS: [
+    //                 "correctDataSet_dept",
+    //                 "correctDataSet_id",
+    //                 "correctDataSet_avg",
+    //                 "correctDataSet_instructor",
+    //                 "correctDataSet_title",
+    //                 "correctDataSet_pass",
+    //                 "correctDataSet_fail",
+    //                 "correctDataSet_audit",
+    //                 "correctDataSet_uuid",
+    //                 "correctDataSet_year"
+    //
+    //             ]
+    //         }
+    //     });
+    // });
 
-                ]
-            }
-        });
-    });
-
-    it("wildcards start with *", async () => {
-        let response: any[] = [];
-        try {
-            response = await insightFacade.performQuery({
-                WHERE: {
-                    AND: [
-                        {
-                            GT: {
-                                courses_avg: 97
-                            }
-                        },
-                        {
-                            IS: {
-                                courses_dept: "*c"
-                            }
-                        }
-                    ]
-                },
-                OPTIONS: {
-                    COLUMNS: [
-                        "courses_dept",
-                        "courses_id",
-                        "courses_avg"
-                    ],
-                    ORDER: "courses_avg"
-                }
-            });
-        } catch (e) {
-            response = e;
-        } finally {
-            expect (response).to.deep.equal([{courses_dept: "educ", courses_id: "500", courses_avg: 97.5}]);
-        }
-
-    });
+    // it("wildcards start with *", async () => {
+    //     let response: any[] = [];
+    //     try {
+    //         response = await insightFacade.performQuery({
+    //             WHERE: {
+    //                 AND: [
+    //                     {
+    //                         GT: {
+    //                             courses_avg: 97
+    //                         }
+    //                     },
+    //                     {
+    //                         IS: {
+    //                             courses_dept: "*c"
+    //                         }
+    //                     }
+    //                 ]
+    //             },
+    //             OPTIONS: {
+    //                 COLUMNS: [
+    //                     "courses_dept",
+    //                     "courses_id",
+    //                     "courses_avg"
+    //                 ],
+    //                 ORDER: "courses_avg"
+    //             }
+    //         });
+    //     } catch (e) {
+    //         response = e;
+    //     } finally {
+    //         expect (response).to.deep.equal([{courses_dept: "educ", courses_id: "500", courses_avg: 97.5}]);
+    //     }
+    //
+    // });
 
 });
 

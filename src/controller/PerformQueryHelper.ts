@@ -41,7 +41,7 @@ export class PerformQueryHelper {
     }
 
     public isQueryValidOrNot(query: any): boolean {
-        try {
+        // try {
             // check format of WHERE and OPTIONS
             // if (!(query["WHERE"] && query["OPTIONS"])) {
             //     return false;
@@ -85,9 +85,9 @@ export class PerformQueryHelper {
                     return this.isValidWHERE(where);
                 }
             }
-        } catch (e) {
-            return false;
-        }
+        // } catch (e) {
+        //     return false; // TODO : Is this line really necessary?
+        // }
 
     }
 
@@ -326,7 +326,7 @@ export class PerformQueryHelper {
     }
 
     private isNumberKey(inputNumberKey: string): boolean {
-        try {
+        // try {
             let prefix = inputNumberKey.split("_")[0];
             let postfix = inputNumberKey.split("_")[1];
             if (!(this.idName === prefix)) {
@@ -338,13 +338,13 @@ export class PerformQueryHelper {
                     return true;
                 }
             }
-        } catch (e) {
-            return false;
-        }
+        // } catch (e) {
+        //     return false;
+        // }
     }
 
     private isStringKey(inputStringKey: string): boolean {
-        try {
+        // try {
             let prefix = inputStringKey.split("_")[0];
             let postfix = inputStringKey.split("_")[1];
             if (!(this.idName === prefix)) {
@@ -356,9 +356,9 @@ export class PerformQueryHelper {
                     return true;
                 }
             }
-        } catch (e) {
-            return false;
-        }
+        // } catch (e) {
+        //     return false;
+        // }
     }
 
     private isValidStringInIS(inputString: string): boolean {
@@ -378,7 +378,7 @@ export class PerformQueryHelper {
                     return false;
                 } else {
                     // check if it's valid course key
-                    try {
+                    // try {
                         let prifix = column.split("_")[0];
                         let postfix = column.split("_")[1];
                         if (this.idName.length === 0) {
@@ -390,9 +390,9 @@ export class PerformQueryHelper {
                                 return false;
                             }
                         }
-                    } catch (e) {
-                        return false;
-                    }
+                    // } catch (e) {
+                    //     return false;
+                    // }
                 }
             }
         }
