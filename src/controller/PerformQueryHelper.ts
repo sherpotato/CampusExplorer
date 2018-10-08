@@ -41,7 +41,7 @@ export class PerformQueryHelper {
     }
 
     public isQueryValidOrNot(query: any): boolean {
-        // try {
+        try {
             // check format of WHERE and OPTIONS
             // if (!(query["WHERE"] && query["OPTIONS"])) {
             //     return false;
@@ -85,9 +85,9 @@ export class PerformQueryHelper {
                     return this.isValidWHERE(where);
                 }
             }
-        // } catch (e) {
-        //     return false; // TODO : Is this line really necessary?
-        // }
+        } catch (e) {
+            return false; // TODO : Is this line really necessary?
+        }
 
     }
 
