@@ -35,7 +35,6 @@ export class PerformQueryHelper {
     public idName: string;
     private realSections: any[] = [];
 
-// TODO
     constructor(id: string) {
         this.idName = id;
     }
@@ -86,7 +85,7 @@ export class PerformQueryHelper {
                 }
             }
         } catch (e) {
-            return false; // TODO : Is this line really necessary?
+            return false;
         }
 
     }
@@ -381,7 +380,7 @@ export class PerformQueryHelper {
                     // try {
                         let prifix = column.split("_")[0];
                         let postfix = column.split("_")[1];
-                        if (this.idName.length === 0) {
+                        if (this.idName.length === 0) { // TODO: potential bug: first added item
                             this.idName = prifix;
                         } else if (!(this.idName === prifix)) {
                             return false;
