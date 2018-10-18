@@ -106,6 +106,7 @@ export class DatasetHelper {
 
     public addRoomDataset(id: string, content: string,
                           datasetId: string[], validDataset: Map<string, any[]>): Promise<string[]> {
+        const curr = this;
         return new Promise((fulfill, reject) => {
             let currZip = new JSZip();
             const parse5 = require("parse5");
@@ -115,10 +116,12 @@ export class DatasetHelper {
                     try {
                         const inputIndex = parse5.parse(index);
                         // TODO
-
-                        Log.trace(inputIndex);
+                        // Log.trace(inputIndex);
+                        const tBody = this.traversalTree(inputIndex.childNodes);
+                        let res = parse5.parse(tBody);
+                        Log.trace(res);
                     } catch (e) {
-                        reject(new InsightError(""));
+                        reject(new InsightError("fail do not why."));
                     }
                 }).catch(() => {
                     reject(new InsightError("index.htm does not exist."));
@@ -128,5 +131,23 @@ export class DatasetHelper {
                 reject(e);
             });
         });
+    }
+
+    public traversalTree(nodes: any[]): any[] {
+        let nodeListObject: any[] = [];
+        if (nodes === undefined) {
+            return nodeListObject;
+        } else {
+            for (let eachNode of nodes) {
+                if (eachNode.nodeName === "tbody") {
+                    nodeListObject = eachNode.childNodes;
+                    return nodeListObject;
+                } else {
+                    nodeListObject = this.traversalTree(eachNode.childNodes);
+                    return nodeListObject;
+                }
+            }
+            return nodeListObject;
+        }
     }
 }
