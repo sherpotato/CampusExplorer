@@ -1,5 +1,6 @@
 import * as JSZip from "jszip";
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
+import Log from "../Util";
 
 export class DatasetHelper {
 
@@ -114,6 +115,8 @@ export class DatasetHelper {
                     try {
                         const inputIndex = parse5.parse(index);
                         // TODO
+
+                        Log.trace(inputIndex);
                     } catch (e) {
                         reject(new InsightError(""));
                     }

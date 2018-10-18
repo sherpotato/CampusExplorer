@@ -40,6 +40,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         missFieldValid: "./test/data/missFieldValid.zip",
         missFieldInvalid: "./test/data/missFieldInvalid.zip",
         correctDataSet: "./test/data/correctDataSet.zip",
+        rooms: "./test/data/rooms.zip"
     };
 
     let insightFacade: InsightFacade;
@@ -89,6 +90,19 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
         try {
             response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should add a valid room's dataset", async function () {
+        const id: string = "rooms";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
         } catch (err) {
             response = err;
         } finally {
