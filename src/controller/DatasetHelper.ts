@@ -115,11 +115,9 @@ export class DatasetHelper {
                 unzippedFiles.file("index.htm").async("text").then((index: any) => {
                     try {
                         const inputIndex = parse5.parse(index);
-                        // TODO
                         // Log.trace(inputIndex);
                         const tBody = this.traversalTree(inputIndex.childNodes);
-                        let res = parse5.parse(tBody);
-                        Log.trace(res);
+                        // TODO
                     } catch (e) {
                         reject(new InsightError("fail do not why."));
                     }
@@ -144,7 +142,9 @@ export class DatasetHelper {
                     return nodeListObject;
                 } else {
                     nodeListObject = this.traversalTree(eachNode.childNodes);
-                    return nodeListObject;
+                    if (nodeListObject.length !== 0) {
+                        return nodeListObject;
+                    }
                 }
             }
             return nodeListObject;
