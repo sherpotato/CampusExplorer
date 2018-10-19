@@ -97,7 +97,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("Should add a valid room's dataset", async function () {
+    it("Should add a valid rooms dataset", async function () {
         const id: string = "rooms";
         let response: string[];
 

@@ -106,7 +106,6 @@ export class DatasetHelper {
 
     public addRoomDataset(id: string, content: string,
                           datasetId: string[], validDataset: Map<string, any[]>): Promise<string[]> {
-        const curr = this;
         return new Promise((fulfill, reject) => {
             let currZip = new JSZip();
             const parse5 = require("parse5");
@@ -131,6 +130,7 @@ export class DatasetHelper {
         });
     }
 
+    // find the content inside of the "tbody"
     public traversalTree(nodes: any[]): any[] {
         let nodeListObject: any[] = [];
         if (nodes === undefined) {
