@@ -1,6 +1,7 @@
 import * as JSZip from "jszip";
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Log from "../Util";
+import {isNullOrUndefined} from "util";
 
 export class DatasetHelper {
 
@@ -116,6 +117,20 @@ export class DatasetHelper {
                         const inputIndex = parse5.parse(index);
                         // Log.trace(inputIndex);
                         const tBody = this.traversalTree(inputIndex.childNodes);
+                        // tBody is an object with several nodes
+                        /*
+                        if (!(isNullOrUndefined(tBody))) {
+                            for (let trValid of tBody) {
+                                if (trValid.nodeName === "tr") {
+                                    let children = trValid.childNodes;
+                                    if (!isNullOrUndefined(children)) {
+                                        for (let tdValid of children) {
+                                            // TODO
+                                        }
+                                    }
+                                }
+                            }
+                        }*/
                         // TODO
                     } catch (e) {
                         reject(new InsightError("fail do not why."));
