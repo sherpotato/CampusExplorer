@@ -108,6 +108,8 @@ export class DatasetHelper {
     public addRoomDataset(id: string, content: string,
                           datasetId: string[], validDataset: Map<string, any[]>): Promise<string[]> {
         return new Promise((fulfill, reject) => {
+            let roomObs: any = [];
+            let validRooms: any = [];
             let currZip = new JSZip();
             const parse5 = require("parse5");
             // load dataset
@@ -118,19 +120,39 @@ export class DatasetHelper {
                         // Log.trace(inputIndex);
                         const tBody = this.traversalTree(inputIndex.childNodes);
                         // tBody is an object with several nodes
-                        /*
                         if (!(isNullOrUndefined(tBody))) {
                             for (let trValid of tBody) {
                                 if (trValid.nodeName === "tr") {
                                     let children = trValid.childNodes;
                                     if (!isNullOrUndefined(children)) {
+                                        let shortname;
+                                        let href;
+                                        let fullname;
+                                        let address;
                                         for (let tdValid of children) {
-                                            // TODO
+                                            if (tdValid.nodeName === "td" && tdValid.attrs[0].name === "class") {
+                                               if (!isNullOrUndefined(tdValid.attrs)) {
+                                                    if (tdValid.attrs[0].value ===
+                                                        "views-field views-field-field-building-code") {
+                                                        shortname = tdValid.childNodes[0].value.trim();
+                                                    }
+                                                    if (tdValid.attrs[0].value ===
+                                                        "views-field views-field-field-building-address") {
+                                                        address = tdValid.childNodes[0].value.trim();
+                                                    }
+                                                    if (tdValid.attrs[0].value ===
+                                                        "views-field views-field-field-building-title") {
+                                                        href = tdValid.childNodes[0].attrs[0].value;
+                                                        fullname = tdValid.childNodes[0].attrs[1].value;
+                                                        // TODO: not sure the index of childNodes
+                                                    }
+                                               }
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }*/
+                        }
                         // TODO
                     } catch (e) {
                         reject(new InsightError("fail do not why."));
@@ -165,4 +187,13 @@ export class DatasetHelper {
             return nodeListObject;
         }
     }
+
+    // get geoLocation of given address
+    public getLatAndLon(address: string): Promise<any> {
+        return new Promise((fulfill, reject) => {
+            const http = require("http");
+            const link = "http://cs310.ugrad.cs.ubc.ca:11316/api/v1/project_d9b1b_i4f1b/" + address.replace(" ", "%20");
+        });
+    }
+
 }
