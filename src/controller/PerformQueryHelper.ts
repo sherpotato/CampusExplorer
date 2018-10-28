@@ -2,6 +2,32 @@ import {InsightError} from "./IInsightFacade";
 import {error} from "util";
 import Log from "../Util";
 
+enum AllNumberKey {
+    Avg = "avg",
+    Pass = "pass",
+    Fail = "fail",
+    Audit = "audit",
+    Year = "year",
+    Lat = "lat",
+    Lon = "lon",
+    Seats = "seats",
+}
+
+enum AllStringKey {
+    Dept = "dept",
+    Id = "id",
+    Instructor = "instructor",
+    Title = "title",
+    Uuid = "uuid",
+    FullName = "fullname",
+    ShortName = "shortname",
+    Number = "number",
+    Name = "name",
+    Address = "address",
+    Type = "type",
+    Furniture = "furniture",
+    Href = "href",
+}
 enum CourseKey {
     Dept = "dept",
     Id = "id",
@@ -13,6 +39,30 @@ enum CourseKey {
     Audit = "audit",
     Uuid = "uuid",
     Year = "year",
+}
+
+enum RoomKey {
+    FullName = "fullname",
+    ShortName = "shortname",
+    Number = "number",
+    Name = "name",
+    Address = "address",
+    Lat = "lat",
+    Lon = "lon",
+    Seats = "seats",
+    Type = "type",
+    Furniture = "furniture",
+    Href = "href",
+}
+
+enum RoomNumberKey {
+    Lat = "lat",
+    Lon = "lon",
+    Seats = "seats",
+}
+
+enum applyToken {
+    "MAX", "MIN", "AVG", "COUNT", "SUM",
 }
 
 enum StringKey {
@@ -32,8 +82,12 @@ enum NumberKey {
 }
 
 export class PerformQueryHelper {
-    public idName: string;
+    public idName: string = "";
     private realSections: any[] = [];
+    private applyKeys: any[] = [];
+    private dataType: string = "";
+    private keysInTransformation = new Set();
+    private transFlag: boolean = false;
 
     constructor(id: string) {
         this.idName = id;
@@ -54,7 +108,20 @@ export class PerformQueryHelper {
 
             // check if there is any invalid key in 1st layer
             for (const key of Object.keys(query)) {
-                if (!(key === "WHERE" || key === "OPTIONS")) {
+                if (!(key === "WHERE" || key === "OPTIONS" || key === "TRANSFORMATIONS")) {
+                    return false;
+                }
+            }
+
+            // check TRANSFORMATIONS
+
+            if (query.hasOwnProperty("TRANSFORMATIONS")) {
+                this.transFlag = true;
+                const transformations = query["TRANSFORMATIONS"];
+                if (!this.isItQuery(transformations)) {
+                    return false;
+                }
+                if (!this.isValidTransformations(transformations)) {
                     return false;
                 }
             }
@@ -64,7 +131,6 @@ export class PerformQueryHelper {
             if (!this.isItQuery(options)) {
                 return false;
             }
-
             if (Object.keys(options).length === 0 ||    // check if OPTIONS is empty
                 Object.keys(options).length > 2 ||      // check if OPTIONS has more than 2
                 !options.hasOwnProperty("COLUMNS")) { // check if OPTIONS has COLUMNS
@@ -366,7 +432,6 @@ export class PerformQueryHelper {
 
     private isValidInOPTIONS(options: any): boolean {
         const columns = options["COLUMNS"];
-        // let idname: string = "";
         // check if COLUMNS is array and not empty
         if (!(Array.isArray(columns) && columns.length > 0)) {
             return false;
@@ -376,33 +441,49 @@ export class PerformQueryHelper {
                 if (!(typeof column === "string")) {
                     return false;
                 } else {
-                    // check if it's valid course key
-                    // try {
-                        let prifix = column.split("_")[0];
-                        let postfix = column.split("_")[1];
-                        if (this.idName.length === 0) { // TODO: potential bug: first added item
-                            this.idName = prifix;
-                        } else if (!(this.idName === prifix)) {
+                    if (this.transFlag === false) {
+                        if (!this.isIDandKeymatch(column)) {
                             return false;
-                        } else {
-                            if (!(Object.values(CourseKey).includes(postfix))) {
-                                return false;
-                            }
                         }
-                    // } catch (e) {
-                    //     return false;
-                    // }
+                    } else {
+                        if (!this.keysInTransformation.has(column)) {
+                            return false;
+                        }
+                    }
                 }
             }
         }
-        // const columnsCopy = options["COLUMNS"];
 
         if (options.hasOwnProperty("ORDER")) {
             const order = options["ORDER"];
-            if (!(typeof order === "string")) {
-                return false;
+            if (!this.isItQuery(order)) {
+                if (typeof order !== "string") {
+                    return false;
+                } else {
+                    return columns.includes(order);
+                }
             } else {
-                return columns.includes(order);
+                if (Object.keys(order).length === 2 && order.hasOwnProperty("dir") && order.hasOwnProperty("keys")) {
+                    let sort = order["dir"];
+                    if (sort !== "UP" && sort !== "DOWN") {
+                        return false;
+                    }
+                    let orderKeys = order["keys"];
+                    if (!(Array.isArray(orderKeys) && orderKeys.length > 0)) {
+                        return false;
+                    } else {
+                        // make sure order items appears in columns
+                        for (let orderKey of orderKeys) {
+                            if (!columns.includes(orderKey)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                } else {
+                    return false;
+                }
             }
         } else {
             return true;
@@ -434,8 +515,13 @@ export class PerformQueryHelper {
                 } else if (Object.keys(stuffInComparator).length !== 1) {
                     return false;
                 } else {
-                    return (this.isNumberKey(Object.keys(stuffInComparator)[0])
-                        && (typeof stuffInComparator[Object.keys(stuffInComparator)[0]] === "number"));
+                    let caKey = Object.keys(stuffInComparator)[0];
+                    if (!this.isIDandKeymatch(caKey)) {
+                        return false;
+                    }
+                    let caKeyPostfix = caKey.split("_")[1];
+                    return (Object.values(AllNumberKey).includes(caKeyPostfix)
+                        && (typeof stuffInComparator[caKey] === "number"));
                 }
             } else if (where.hasOwnProperty("AND") || where.hasOwnProperty("OR")) {
                 const logic = Object.keys(where)[0];
@@ -466,8 +552,13 @@ export class PerformQueryHelper {
                 } else if ((typeof stuffInIs[Object.keys(stuffInIs)[0]] !== "string")) {
                     return false;
                 } else {
-                    return (this.isStringKey(Object.keys(stuffInIs)[0])
-                        && (this.isValidStringInIS(stuffInIs[Object.keys(stuffInIs)[0]])));
+                    let isKey = Object.keys(stuffInIs)[0];
+                    if (!this.isIDandKeymatch(isKey)) {
+                        return false;
+                    }
+                    let isKeyPostfix = isKey.split("_")[1];
+                    return (Object.values(AllStringKey).includes(isKeyPostfix)
+                        && (this.isValidStringInIS(stuffInIs[isKey])));
                 }
             } else if (where.hasOwnProperty("NOT")) {
                 const stuffInNOT = where["NOT"];
@@ -482,5 +573,129 @@ export class PerformQueryHelper {
                 return false;
             }
         }
+    }
+
+    private isApplyKeys(key: string): boolean {
+        if (key.split("_").length === 1 && key.split("_")[0].length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private isValidTransformations(transformations: any): boolean {
+        // Check Group and Apply
+        if (!(transformations.hasOwnProperty("GROUP") &&
+            transformations.hasOwnProperty("APPLY") && Object.keys(transformations).length === 2)) {
+            return false;
+        }
+
+        // validate Group
+        let group = transformations["GROUP"];
+        if (!Array.isArray(group) || group.length < 1) {
+            return false;
+        }
+
+        for (let gKey of group) {
+            if (typeof gKey !== "string") {
+                return false;
+            }
+            // ensure it has "_"
+            if (this.isApplyKeys(gKey)) {
+                return false;
+            }
+            if (!this.isIDandKeymatch(gKey)) {
+                return false;
+            }
+            this.keysInTransformation.add(gKey);
+        }
+
+        // validate Apply
+        let apply = transformations["APPLY"];
+        if (!Array.isArray(apply)) {
+            return false;
+        }
+        if (apply.length > 0) {
+            for (let applyRule of apply) {
+                // return false if it is not a query
+                if (!this.isItQuery(applyRule)) {
+                    return false;
+                }
+                // check if it has only one applykey in every applyrule
+                if (Object.keys(applyRule).length !== 1) {
+                    return false;
+                }
+                let potentialKey = Object.keys(applyRule)[0];
+                if (this.isApplyKeys(potentialKey)) {
+                    this.applyKeys.push(potentialKey);
+                    this.keysInTransformation.add(potentialKey);
+                } else {
+                    return false;
+                }
+
+                let atQuery = applyRule[potentialKey];
+                if (Object.keys(atQuery).length !== 1) {
+                    return false;
+                }
+                let tokenName = Object.keys(atQuery)[0];
+                if (!Object.values(applyToken).includes(tokenName)) {
+                    return false;
+                }
+
+                // check token and key match or not
+                let keyInToken = atQuery[tokenName];
+                if (typeof keyInToken !== "string" || this.isApplyKeys(keyInToken)) {
+                    return false;
+                } else {
+                    if (!this.isIDandKeymatch(keyInToken)) {
+                        return false;
+                    }
+                    if (tokenName !== "COUNT") {
+                        let keyToValidate = keyInToken.split("_")[1];
+                        if (!Object.values(AllNumberKey).includes(keyToValidate)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        } else {
+            return true;
+        }
+
+    }
+
+    private isIDandKeymatch(key: string): boolean {
+        let prefix = key.split("_")[0];
+        let postfix = key.split("_")[1];
+
+        // Check idname stay the same or not
+        if (this.idName.length === 0) {
+            this.idName = prefix;
+        } else {
+            if (!(this.idName === prefix)) {    // TODO: potential solution
+                return false;
+            }
+        }
+
+        // Check postkey match idtype or not
+        if (this.dataType === "") {
+            if (Object.values(CourseKey).includes(postfix)) {
+                this.dataType = "courses";
+            } else if (Object.values(RoomKey).includes(postfix)) {
+                this.dataType = "rooms";
+            } else {
+                return false;
+            }
+        } else if (this.dataType === "courses") {
+            if (!Object.values(CourseKey).includes(postfix)) {
+                return false;
+            }
+        } else {
+            if (!Object.values(RoomKey).includes(postfix)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

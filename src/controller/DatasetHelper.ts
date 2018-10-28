@@ -2,6 +2,7 @@ import * as JSZip from "jszip";
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Log from "../Util";
 import {isNullOrUndefined} from "util";
+import set = Reflect.set;
 
 export class DatasetHelper {
 
@@ -110,6 +111,7 @@ export class DatasetHelper {
         return new Promise((fulfill, reject) => {
             let roomObs: any = [];
             let validRooms: any = [];
+            let buildingmap: Map<string, any> = new Map<string, any>();
             let currZip = new JSZip();
             const parse5 = require("parse5");
             // load dataset
@@ -125,30 +127,48 @@ export class DatasetHelper {
                                 if (trValid.nodeName === "tr") {
                                     let children = trValid.childNodes;
                                     if (!isNullOrUndefined(children)) {
-                                        let shortname;
-                                        let href;
-                                        let fullname;
-                                        let address;
+                                        let buildingInfo = {
+                                            building_fullname: "",
+                                            building_shortname: "",
+                                            building_address: "",
+                                            building_lat: 0,
+                                            building_lon: 0,
+                                            building_href: ""
+                                        };
+                                        let shortname = "";
                                         for (let tdValid of children) {
                                             if (tdValid.nodeName === "td" && tdValid.attrs[0].name === "class") {
                                                if (!isNullOrUndefined(tdValid.attrs)) {
                                                     if (tdValid.attrs[0].value ===
                                                         "views-field views-field-field-building-code") {
                                                         shortname = tdValid.childNodes[0].value.trim();
+                                                        buildingInfo["building_shortname"] = shortname;
                                                     }
                                                     if (tdValid.attrs[0].value ===
                                                         "views-field views-field-field-building-address") {
-                                                        address = tdValid.childNodes[0].value.trim();
+                                                        buildingInfo["building_address"] =
+                                                            tdValid.childNodes[0].value.trim();
                                                     }
                                                     if (tdValid.attrs[0].value ===
                                                         "views-field views-field-field-building-title") {
-                                                        href = tdValid.childNodes[0].attrs[0].value;
-                                                        fullname = tdValid.childNodes[0].attrs[1].value;
+                                                        buildingInfo["building_href"] =
+                                                            tdValid.childNodes[0].attrs[0].value;
+                                                        buildingInfo["building_fullname"] =
+                                                            tdValid.childNodes[0].attrs[1].value;
                                                         // TODO: not sure the index of childNodes
                                                     }
                                                }
                                             }
                                         }
+                                        buildingmap.set(shortname, buildingInfo);
+                                        async function setGeo() {
+                                            await this.getLatAndLon(buildingInfo).catch((e: any) => {
+                                                Log.trace(e);
+                                            });
+                                        }
+                                        setGeo().then(() => {
+                                            // TODO:
+                                        });
                                     }
                                 }
                             }
@@ -189,10 +209,40 @@ export class DatasetHelper {
     }
 
     // get geoLocation of given address
-    public getLatAndLon(address: string): Promise<any> {
+    // TODO : NEED TO MODIFIED!!!!!!!!!!!
+    public getLatAndLon(info: any): Promise<any> {
         return new Promise((fulfill, reject) => {
+            const addr = info["building_address"];
             const http = require("http");
-            const link = "http://cs310.ugrad.cs.ubc.ca:11316/api/v1/project_d9b1b_i4f1b/" + address.replace(" ", "%20");
+            const link = "http://cs310.ugrad.cs.ubc.ca:11316/api/v1/project_d9b1b_i4f1b/" + addr.replace(" ", "%20");
+            http.get(link, (response: any) => {
+                const {statusCode} = response;
+                // get server response
+                if (statusCode !== 200) {
+                    let err = new InsightError("Request Failed.\n" +
+                        `Status Code: ${statusCode}`);
+                    reject(err);
+                }
+                response.setEncoding("utf8");
+                let originalData = "";
+                response.on("data", (chunk: any) => {
+                    originalData += chunk;
+                });
+                response.on("end", () => {
+                    try {
+                        const parseResult = JSON.parse(originalData);
+                        // extract lat/lon
+                        info["building_lat"] = parseResult.lat;
+                        info["building_lon"] = parseResult.lon;
+                        // Log.trace("lat " + restInfo["rooms_lat"]);
+                        // Log.trace("lon " + restInfo["rooms_lon"]);
+                        fulfill(info);
+                    } catch (err) {
+                        err = new InsightError("Cannot write to disk");
+                        reject(err);
+                    }
+                });
+            });
         });
     }
 
