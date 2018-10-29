@@ -359,6 +359,8 @@ export class DatasetHelper {
                                     let err = new InsightError("fail to add info");
                                     reject(err);
                                 }
+                            }).catch(() => {
+                                reject(new InsightError("Geo problem maybe???."));
                             });
                         }
                         // TODO
