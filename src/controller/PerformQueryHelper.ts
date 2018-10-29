@@ -165,10 +165,9 @@ export class PerformQueryHelper {
             this.idName = id;
             results = this.whereHelper(query["WHERE"]);
             if (query.hasOwnProperty("TRANSFORMATIONS")) {
-                results = this.transformationAndOptionHelper(query["TRANSFORMATIONS"], query["OPTIONS"], results);
-            } else {
-                results = this.optionHelper(query["OPTIONS"], results);
+                results = this.transformationHelper(query["TRANSFORMATIONS"], results);
             }
+            results = this.optionHelper(query["OPTIONS"], results);
 
             if (results.length > 5000) {
                 throw new InsightError("> 5000");
@@ -183,17 +182,24 @@ export class PerformQueryHelper {
     private optionHelper(options: any, filteredData: any[]): any[] {
         let results: any[] = [];
         const columnArray = options["COLUMNS"];
-        const keyArray: any[] = [this.idName + "_dept", this.idName + "_id", this.idName + "_avg",
-            this.idName + "_instructor", this.idName + "_title", this.idName + "_pass",
-            this.idName + "_fail", this.idName + "_audit", this.idName + "_uuid", this.idName + "_year"];
+        // const keyArray: any[] = [this.idName + "_dept", this.idName + "_id", this.idName + "_avg",
+        //     this.idName + "_instructor", this.idName + "_title", this.idName + "_pass",
+        //     this.idName + "_fail", this.idName + "_audit", this.idName + "_uuid", this.idName + "_year"];
 
+        // const RoomKeyArray: any[] = [this.idName + "_fullname", this.idName + "_shortname", this.idName + "_number",
+        //     this.idName + "_name", this.idName + "_address", this.idName + "_lat",
+        //     this.idName + "_lon", this.idName + "_seats", this.idName + "_type", this.idName + "_furniture",
+        //     this.idName + "_href"];
+        // const CourseKeyArray: any[] = [this.idName + "_dept", this.idName + "_id", this.idName + "_avg",
+        //     this.idName + "_instructor", this.idName + "_title", this.idName + "_pass",
+        //     this.idName + "_fail", this.idName + "_audit", this.idName + "_uuid", this.idName + "_year"];
         for (let item1 of filteredData) {
             results.push(item1);
         }
         // Log.trace("Before delete:key.length:" + Object.keys(results[0]).length.toString());
 
         for (let item of results) {
-            for (let eachKey of keyArray) {
+            for (let eachKey of Object.keys(item)) {
                 // Log.trace(eachKey);
                 if (!columnArray.includes(eachKey)) {
                     // Log.trace("delete " + eachKey);
@@ -204,7 +210,12 @@ export class PerformQueryHelper {
         // Log.trace("After delete:key.length:" + Object.keys(results[0]).length.toString());
 
         if (options.hasOwnProperty("ORDER")) {
-            results = this.sortHelper(filteredData, options["ORDER"]);
+            if (typeof options["ORDER"] === "string") {
+                results = this.sortHelper(filteredData, options["ORDER"]);
+            } else {
+                results = this.advancedSortHelper(filteredData, options["ORDER"]);
+
+            }
         }
 
         // let unmentionedIdKeys: string[] = [];
@@ -222,6 +233,37 @@ export class PerformQueryHelper {
                 return 0;
             }
         });
+        return filterData;
+    }
+
+    private advancedSortHelper(filterData: any[], sort: any): any[] {
+        let direction = sort["dir"];
+        let orderKeys = sort["keys"];
+        if (direction === "UP") {
+            for (let eachKey of orderKeys) {
+                filterData.sort((a: any, b: any) => {
+                    if (a[eachKey] > b[eachKey]) {
+                        return 1;
+                    } else if (a[eachKey] < b[eachKey]) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+            }
+        } else {
+            for (let eachKey of orderKeys) {
+                filterData.sort((a: any, b: any) => {
+                    if (a[eachKey] > b[eachKey]) {
+                        return -1;
+                    } else if (a[eachKey] < b[eachKey]) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+            }
+        }
         return filterData;
     }
 
@@ -758,8 +800,8 @@ export class PerformQueryHelper {
         return returnValue;
     }
 
-    private transformationAndOptionHelper(transformations: any, options: any, results: any[]): any[] {
-        let columns: any[] = options["COLUMNS"];
+    private transformationHelper(transformations: any, results: any[]): any[] {
+        // let columns: any[] = options["COLUMNS"];
 
         // gather Apply keys
         let applyArray = transformations["APPLY"];

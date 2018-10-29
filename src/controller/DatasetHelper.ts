@@ -16,7 +16,7 @@ export class DatasetHelper {
             // raw data from unzipping
             const promiseList: Array<Promise<string>> = [];
 
-// load dataset
+            // load dataset
             currZip.loadAsync(content, {base64: true}).then((unzippedFiles: any) => {
                 try {
                     // try to open courses folder
@@ -42,7 +42,7 @@ export class DatasetHelper {
                             let readableJSON = JSON.parse(eachCourse)["result"];
                             for (let eachSection of readableJSON) {
                                 try {
-                                    let year = parseInt(eachSection.Year, 10);
+                                    let year = eachSection === "overall" ? 1900 : parseInt(eachSection.Year, 10);
                                     // let uuid = eachSection.id.toString();
                                     if (typeof eachSection.Subject === "string" &&
                                         typeof eachSection.Course === "string" &&
@@ -53,7 +53,7 @@ export class DatasetHelper {
                                         typeof eachSection.Fail === "number" &&
                                         typeof eachSection.Audit === "number" &&
                                         typeof eachSection.id.toString() === "string" &&
-                                        typeof year === "number") {
+                                        typeof year === "number" ) {
                                         // Log.trace("Section Keys' Type checked");
                                         const validSection: { [key: string]: string | number } = {
                                             // TO DO: ASK TA!!!
@@ -138,7 +138,7 @@ export class DatasetHelper {
                                         let shortname = "";
                                         for (let tdValid of children) {
                                             if (tdValid.nodeName === "td" && tdValid.attrs[0].name === "class") {
-                                               if (!isNullOrUndefined(tdValid.attrs)) {
+                                                if (!isNullOrUndefined(tdValid.attrs)) {
                                                     if (tdValid.attrs[0].value ===
                                                         "views-field views-field-field-building-code") {
                                                         shortname = tdValid.childNodes[0].value.trim();
@@ -157,21 +157,209 @@ export class DatasetHelper {
                                                             tdValid.childNodes[0].attrs[1].value;
                                                         // TODO: not sure the index of childNodes
                                                     }
-                                               }
+                                                }
                                             }
                                         }
                                         buildingmap.set(shortname, buildingInfo);
-                                        async function setGeo() {
-                                            await this.getLatAndLon(buildingInfo).catch((e: any) => {
-                                                Log.trace(e);
-                                            });
-                                        }
-                                        setGeo().then(() => {
-                                            // TODO:
-                                        });
                                     }
                                 }
                             }
+                            async function setGeo() {
+                                for (let building  of buildingmap.values()) {
+                                    await this.getLatAndLon(building).catch((e: any) => {
+                                        // Log.trace(e);
+                                    });
+                                }
+
+                            }
+                            setGeo().then(() => {
+                                try {
+                                    const promiseArray: any[] = [];
+                                    for (let building of buildingmap.values()) {
+                                        const realPath = building["rooms_href"].substring(2);
+                                        // Log.trace("path is " + realPath);
+                                        promiseArray.push(unzippedFiles.file(realPath)
+                                            .async("text").then(function (data: any) {
+                                                let originalData = parse5.parse(data);
+                                                try {
+                                                    let span: any = originalData.childNodes[6].childNodes[3]
+                                                        .childNodes[31].childNodes[10].childNodes[1].childNodes[3]
+                                                        .childNodes[1].childNodes[3].childNodes[1].childNodes[1]
+                                                        .childNodes[1].childNodes[1].childNodes[0];
+                                                    let bName: any = span.childNodes[0].value.trim();
+                                                    if (buildingmap.has(bName)) {
+                                                        const validRoom = {
+                                                            room_fullname: "",
+                                                            room_shortname: "",
+                                                            room_number: "",
+                                                            room_name: "",
+                                                            room_address: "",
+                                                            room_lat: 0,
+                                                            room_lon: 0,
+                                                            room_seats: 0,
+                                                            room_type: "",
+                                                            room_furniture: "",
+                                                            room_href: "",
+                                                        };
+
+                                                        try {
+                                                            let rnumber: string;
+                                                            let seats: number;
+                                                            let type: string;
+                                                            let furniture: string;
+                                                            let rhref: string;
+                                                            let tbody2 = this.traversalTree(originalData.childNodes);
+                                                            for (let tr of tbody2.childNodes) {
+                                                                if (tr.nodeName === "tr") {
+                                                                    let child = tr.childNodes;
+                                                                    if (!isNullOrUndefined(child)) {
+                                                                        for (let td of child) {
+                                                                            if (td.nodeName === "td" &&
+                                                                                td.attrs[0].name === "class") {
+                                                                                    let attr = td.attrs[0].value;
+                                                                                    if (attr === "views-field " +
+                                                                                        "views-field-field-room-" +
+                                                                                        "number") {
+                                                                                        rnumber = td.childNodes[1]
+                                                                                            .childNodes[0].value.trim();
+                                                                                        validRoom["room_number"] =
+                                                                                            rnumber;
+                                                                                    }
+                                                                                    if (attr === "views-field " +
+                                                                                        "views-field-field-room-capac" +
+                                                                                        "ity") {
+                                                                                        seats = td.childNodes[0].value
+                                                                                            .trim();
+                                                                                        validRoom["room_seats"] = seats;
+                                                                                    }
+                                                                                    if (attr === "views-field " +
+                                                                                        "views-field-field-room-type") {
+                                                                                        type = td.childNodes[0].value
+                                                                                            .trim();
+                                                                                        validRoom["room_type"] = type;
+                                                                                    }
+                                                                                    if (attr === "views-field " +
+                                                                                        "views-field-field-room-furnit"
+                                                                                        + "ure") {
+                                                                                        furniture = td.childNodes[0]
+                                                                                            .value.trim();
+                                                                                        validRoom["room_furniture"] =
+                                                                                            furniture;
+                                                                                    }
+                                                                                    if (attr === "views-field views-" +
+                                                                                        "field-nothing") {
+                                                                                        rhref = td.childNodes[1]
+                                                                                            .attrs[0].value;
+                                                                                        validRoom["room_href"] =
+                                                                                            rhref;
+                                                                                    }
+                                                                                }
+                                                                        }
+                                                                    }
+                                                                    let tempBuilding = buildingmap.get(bName);
+                                                                    validRoom["room_fullname"] =
+                                                                        tempBuilding["building_fullname"];
+                                                                    validRoom["room_shortname"] =
+                                                                        tempBuilding["building_shortname"];
+                                                                    validRoom["room_address"] =
+                                                                        tempBuilding["building_address"];
+                                                                    validRoom["room_href"] =
+                                                                        tempBuilding["building_href"];
+                                                                    validRoom["room_lat"] =
+                                                                        tempBuilding["building_lat"];
+                                                                    validRoom["room_lon"] =
+                                                                        tempBuilding["building_lon"];
+                                                                    validRoom["room_name"] =
+                                                                        validRoom["room_shortname"]
+                                                                        + "_" + validRoom["room_number"];
+
+                                                                    if (typeof validRoom["room_fullname"] ===
+                                                                        "string" &&
+                                                                        typeof validRoom["room_shortname"] ===
+                                                                        "string"
+                                                                        && typeof validRoom["room_number"] ===
+                                                                        "string" &&
+                                                                        typeof validRoom["room_name"]
+                                                                            === "string" &&
+                                                                        typeof validRoom["room_address"] ===
+                                                                        "string"  &&
+                                                                        typeof validRoom["room_lat"] === "number" &&
+                                                                        typeof validRoom["room_lon"] === "number" &&
+                                                                        typeof validRoom["room_seats"] === "number"  &&
+                                                                        typeof validRoom["room_type"]
+                                                                         === "string" &&
+                                                                        typeof validRoom["room_furniture"]
+                                                                        === "string" &&
+                                                                        typeof validRoom["room_href"] === "string") {
+                                                                        const validRoomSec: { [key: string]:
+                                                                                string | number } = {
+                                                                            [id + "_fullname"]:
+                                                                                validRoom["room_fullname"],
+                                                                            [id + "_shortname"]:
+                                                                                validRoom["room_shortname"],
+                                                                            [id + "_number"]:
+                                                                                validRoom["room_number"],
+                                                                            [id + "_name"]:
+                                                                                validRoom["room_name"],
+                                                                            [id + "_address"]:
+                                                                                validRoom["room_address"],
+                                                                            [id + "_lat"]:
+                                                                                validRoom["room_lat"],
+                                                                            [id + "_lon"]:
+                                                                                validRoom["room_lon"],
+                                                                            [id + "_seats"]:
+                                                                                validRoom["room_seats"],
+                                                                            [id + "_type"]:
+                                                                                validRoom["room_type"],
+                                                                            [id + "_furniture"]:
+                                                                                validRoom["room_furniture"],
+                                                                            [id + "_href"]:
+                                                                                validRoom["room_href"],
+                                                                        };
+                                                                        validRooms.push(validRoomSec);
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        } catch {
+                                                            let err = new InsightError("cannot find correct " +
+                                                                "info for this building " +
+                                                                validRoom["room_fullname"]);
+                                                        }
+
+                                                    }
+                                                } catch {
+                                                    // let err = new InsightError("no valid room for this");
+                                                    // reject(err);
+                                                }
+                                            }));
+
+                                        Promise.all(promiseArray)
+                                            .then(function () {
+                                                if (validRooms.length === 0) {
+                                                    reject(new InsightError("Dataset is not valid"));
+                                                } else {
+                                                    const fs = require("fs");
+                                                    try {
+                                                        fs.mkdir("./data", () => {
+                                                            const roomString = JSON.stringify(validRooms, null, " ");
+                                                            fs.writeFile("./data/" + id + ".json", roomString);
+                                                            datasetId.push(id);
+                                                            validDataset.set(id, validRooms);
+                                                            fulfill(datasetId);
+                                                        });
+                                                    } catch {
+                                                        reject(new InsightError("Fail to add dataset into cache."));
+                                                    }
+                                                }
+                                            });
+
+                                    }
+                                } catch {
+                                    let err = new InsightError("fail to add info");
+                                    reject(err);
+                                }
+                            });
                         }
                         // TODO
                     } catch (e) {
