@@ -739,8 +739,8 @@ export class PerformQueryHelper {
         let returnValue: number = 0;
         let reservedSample = singleGroup[0];
         for (let eachApply of applys) {
-            let applyRule = Object.values(eachApply)[0];
-            let tokenName = Object.values(eachApply[applyRule])[0];
+            let applyRule = Object.keys(eachApply)[0];
+            let tokenName = Object.keys(eachApply[applyRule])[0];
             let columnBesideToken = eachApply[applyRule][tokenName];
             switch (tokenName) {
                 case "COUNT":
@@ -797,7 +797,8 @@ export class PerformQueryHelper {
             reservedSample[applyRule] = returnValue;
 
         }
-        return returnValue;
+        // return returnValue;
+        return reservedSample;
     }
 
     private transformationHelper(transformations: any, results: any[]): any[] {
@@ -807,7 +808,7 @@ export class PerformQueryHelper {
         let applyArray = transformations["APPLY"];
         let keysInApply = [];
         for (let applyRule of applyArray) {
-            let applyRuleName = Object.values(applyRule)[0];
+            let applyRuleName = Object.keys(applyRule)[0];
             // let tokenName = Object.values(applyRule[applyRuleName])[0];
             // let columnBesideToken = applyRule[applyRuleName][tokenName];
             keysInApply.push(applyRuleName);
@@ -834,6 +835,7 @@ export class PerformQueryHelper {
             } else {
                 libraryOfCombination[combination].push(section);
             }
+            combination = "";
         }
         // set map
         // for (let b of Object.values(libraryOfCombination)) {
@@ -844,7 +846,7 @@ export class PerformQueryHelper {
         let allCombinations = Object.values(libraryOfCombination);
         let response: any [] = [];
         for (let g of allCombinations) {
-            response.push(this.performApplyHelper(applyArray, libraryOfCombination[g]));
+            response.push(this.performApplyHelper(applyArray, g));
         }
 
         // const RoomKeyArray: any[] = [this.idName + "_fullname", this.idName + "_shortname", this.idName + "_number",

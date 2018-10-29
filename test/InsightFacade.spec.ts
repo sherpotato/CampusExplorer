@@ -40,7 +40,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         missFieldValid: "./test/data/missFieldValid.zip",
         missFieldInvalid: "./test/data/missFieldInvalid.zip",
         correctDataSet: "./test/data/correctDataSet.zip",
-        rooms: "./test/data/rooms.zip"
+        rooms: "./test/data/rooms.zip",
     };
 
     let insightFacade: InsightFacade;
@@ -84,18 +84,18 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // it("Should add a valid dataset", async function () {
-    //     const id: string = "courses";
-    //     let response: string[];
-    //
-    //     try {
-    //         response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
-    //     } catch (err) {
-    //         response = err;
-    //     } finally {
-    //         expect(response).to.deep.equal([id]);
-    //     }
-    // });
+    it("Should add a valid dataset", async function () {
+        const id: string = "courses";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
 
     it("Should add a valid rooms dataset", async function () {
         const id: string = "rooms";
