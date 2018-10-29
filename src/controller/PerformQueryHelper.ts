@@ -154,7 +154,7 @@ export class PerformQueryHelper {
             return false;
         }
 
-    }
+    } // TODO: validation of token not checked??
 
     public dealWithQuery(query: any, ds: any[], id: string): any[] {
         let results: any[] = [];
@@ -164,17 +164,11 @@ export class PerformQueryHelper {
             this.realSections = ds;
             this.idName = id;
             results = this.whereHelper(query["WHERE"]);
-            // for (let key of Object.keys(results)) {
-            //     Log.trace("BEFORE:" + key.toString());
-            // }
-
-            // Log.trace("BEFORE:" + Object.keys(results[0]).length.toString());
-            results = this.optionHelper(query["OPTIONS"], results);
-            // Log.trace("AFTER:" + Object.keys(results[0]).length.toString());
-
-            // for (let key of Object.keys(results)) {
-            //     Log.trace("AFTER:" + key.toString());
-            // }
+            if (query.hasOwnProperty("TRANSFORMATIONS")) {
+                results = this.transformationAndOptionHelper(query["TRANSFORMATIONS"], query["OPTIONS"], results);
+            } else {
+                results = this.optionHelper(query["OPTIONS"], results);
+            }
 
             if (results.length > 5000) {
                 throw new InsightError("> 5000");
@@ -697,5 +691,144 @@ export class PerformQueryHelper {
             }
         }
         return true;
+    }
+
+    private performApplyHelper(applys: any[], singleGroup: any[]): any {
+        let returnValue: number = 0;
+        let reservedSample = singleGroup[0];
+        for (let eachApply of applys) {
+            let applyRule = Object.values(eachApply)[0];
+            let tokenName = Object.values(eachApply[applyRule])[0];
+            let columnBesideToken = eachApply[applyRule][tokenName];
+            switch (tokenName) {
+                case "COUNT":
+                    let TempContainer: any[] = [];
+                    for (let item of singleGroup) {
+                        if (!TempContainer.includes(item[columnBesideToken])) {
+                            TempContainer.push(item[columnBesideToken]);
+                        }
+                    }
+                    returnValue = TempContainer.length;
+                    break;
+                case "AVG":
+                    // let answer: number = 0;
+                    const Decimal = require("decimal.js");
+                    let average = new Decimal(0);
+                    for (let item of singleGroup) {
+                        let toBeAdded = new Decimal(item[columnBesideToken]);
+                        average = Decimal.add(average, toBeAdded);
+                    }
+                    let avg = average.toNumber();
+                    avg = average / (singleGroup.length);
+                    returnValue = Number(avg.toFixed(2));
+                    break;
+
+                case "SUM":
+                    let sum: number = 0;
+                    for (let item of singleGroup) {
+                        sum += item[columnBesideToken];
+                    }
+                    returnValue = Number(sum.toFixed(2));
+                    break;
+
+                case "MIN":
+                    let minimum = singleGroup[0][columnBesideToken];
+                    for (let item of singleGroup) {
+                        if (item[columnBesideToken] < minimum) {
+                            minimum = item[columnBesideToken];
+                        }
+                    }
+                    returnValue = minimum;
+                    break;
+
+                case "MAX":
+                    let maximum = singleGroup[0][columnBesideToken];
+                    for (let item of singleGroup) {
+                        if (item[columnBesideToken] > maximum) {
+                            maximum = item[columnBesideToken];
+                        }
+                    }
+                    returnValue = maximum;
+                    break;
+
+            }
+            reservedSample[applyRule] = returnValue;
+
+        }
+        return returnValue;
+    }
+
+    private transformationAndOptionHelper(transformations: any, options: any, results: any[]): any[] {
+        let columns: any[] = options["COLUMNS"];
+
+        // gather Apply keys
+        let applyArray = transformations["APPLY"];
+        let keysInApply = [];
+        for (let applyRule of applyArray) {
+            let applyRuleName = Object.values(applyRule)[0];
+            // let tokenName = Object.values(applyRule[applyRuleName])[0];
+            // let columnBesideToken = applyRule[applyRuleName][tokenName];
+            keysInApply.push(applyRuleName);
+        }
+
+        // gather Group keys
+        let keysInGroup = [];
+        let libraryOfCombination: any = {};
+        let combination: string = "";
+        let groupArray = transformations["GROUP"];
+
+        for (let a of groupArray) {
+            keysInGroup.push(a);
+        }
+
+        // perform Group
+        for (let section of results) {
+            for (let keyInGroup of keysInGroup) {
+                combination = combination.concat(section[keyInGroup]);
+            }
+            if (!libraryOfCombination.hasOwnProperty(combination)) {
+                libraryOfCombination[combination] = [];
+                libraryOfCombination[combination].push(section);
+            } else {
+                libraryOfCombination[combination].push(section);
+            }
+        }
+        // set map
+        // for (let b of Object.values(libraryOfCombination)) {
+        //     groupMap.set(b, libraryOfCombination[b]);
+        // }
+
+        // deal with APPLY
+        let allCombinations = Object.values(libraryOfCombination);
+        let response: any [] = [];
+        for (let g of allCombinations) {
+            response.push(this.performApplyHelper(applyArray, libraryOfCombination[g]));
+        }
+
+        // const RoomKeyArray: any[] = [this.idName + "_fullname", this.idName + "_shortname", this.idName + "_number",
+        //     this.idName + "_name", this.idName + "_address", this.idName + "_lat",
+        //     this.idName + "_lon", this.idName + "_seats", this.idName + "_type", this.idName + "_furniture",
+        //     this.idName + "_href"];
+        // const CourseKeyArray: any[] = [this.idName + "_dept", this.idName + "_id", this.idName + "_avg",
+        //     this.idName + "_instructor", this.idName + "_title", this.idName + "_pass",
+        //     this.idName + "_fail", this.idName + "_audit", this.idName + "_uuid", this.idName + "_year"];
+        //
+        // let toDo: any[];
+        // if (this.dataType === "rooms") {
+        //     toDo = RoomKeyArray.concat(keysInApply);
+        // } else {
+        //     toDo = CourseKeyArray.concat(keysInApply);
+        // }
+        //
+        // for (let eachsection of results) {
+        //     for (let t of toDo) {
+        //         if (!columns.includes(t)) {
+        //             delete eachsection[t];
+        //         }
+        //     }
+        // }
+
+        return response;
+
     }
 }

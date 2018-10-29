@@ -101,20 +101,13 @@ export default class InsightFacade implements IInsightFacade {
                         this.datasetId.push(zhunID);
                         this.validDataset.set(zhunID, data);
                     }
-                    // Log.trace("Before get:key.length:" +
-                    //     Object.keys(this.validDataset.get(zhunID)[0]).length.toString());
+
                     let gs = this.validDataset.get(zhunID);
-                    // Log.trace("Before copy:key.length:" +
-                    //     Object.keys(this.validDataset.get(zhunID)[0]).length.toString());
 
                     let cloned = JSON.parse(JSON.stringify(gs));        // copy array without reference
-                    // Log.trace("After copy:key.length:" +
-                    //     Object.keys(this.validDataset.get(zhunID)[0]).
-                    //     length.toString());
+
                     results = helper.dealWithQuery(query, cloned, zhunID);
-                    // Log.trace("After dealwith:key.length:" +
-                    //     Object.keys(this.validDataset.get(zhunID)[0]).
-                    //     length.toString());
+
                 } catch (e) {
                     // Log.trace("After dealwith:key.length:" +
                     //     Object.keys(this.validDataset.get(helper.idName)[0]).
