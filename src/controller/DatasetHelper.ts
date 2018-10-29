@@ -42,7 +42,8 @@ export class DatasetHelper {
                             let readableJSON = JSON.parse(eachCourse)["result"];
                             for (let eachSection of readableJSON) {
                                 try {
-                                    let year = eachSection === "overall" ? 1900 : parseInt(eachSection.Year, 10);
+                                    let year =  ( eachSection.Year === "overall" ? 1900
+                                        : parseInt(eachSection.Year, 10) );
                                     // let uuid = eachSection.id.toString();
                                     if (typeof eachSection.Subject === "string" &&
                                         typeof eachSection.Course === "string" &&
@@ -109,6 +110,7 @@ export class DatasetHelper {
     public addRoomDataset(id: string, content: string,
                           datasetId: string[], validDataset: Map<string, any[]>): Promise<string[]> {
         return new Promise((fulfill, reject) => {
+            let that = this;
             let roomObs: any = [];
             let validRooms: any = [];
             let buildingmap: Map<string, any> = new Map<string, any>();
@@ -136,6 +138,7 @@ export class DatasetHelper {
                                             building_href: ""
                                         };
                                         let shortname = "";
+                                        let fullname = "";
                                         for (let tdValid of children) {
                                             if (tdValid.nodeName === "td" && tdValid.attrs[0].name === "class") {
                                                 if (!isNullOrUndefined(tdValid.attrs)) {
@@ -150,24 +153,25 @@ export class DatasetHelper {
                                                             tdValid.childNodes[0].value.trim();
                                                     }
                                                     if (tdValid.attrs[0].value ===
-                                                        "views-field views-field-field-building-title") {
+                                                        "views-field views-field-title") {
                                                         buildingInfo["building_href"] =
-                                                            tdValid.childNodes[0].attrs[0].value;
+                                                            tdValid.childNodes[1].attrs[0].value;
+                                                        fullname = tdValid.childNodes[1].childNodes[0].value;
                                                         buildingInfo["building_fullname"] =
-                                                            tdValid.childNodes[0].attrs[1].value;
+                                                            fullname;
                                                         // TODO: not sure the index of childNodes
                                                     }
                                                 }
                                             }
                                         }
-                                        buildingmap.set(shortname, buildingInfo);
+                                        buildingmap.set(fullname, buildingInfo);
                                     }
                                 }
                             }
                             async function setGeo() {
                                 for (let building  of buildingmap.values()) {
-                                    await this.getLatAndLon(building).catch((e: any) => {
-                                        // Log.trace(e);
+                                    await that.getLatAndLon(building).catch((e: any) => {
+                                        Log.trace(e);
                                     });
                                 }
 
@@ -176,10 +180,10 @@ export class DatasetHelper {
                                 try {
                                     const promiseArray: any[] = [];
                                     for (let building of buildingmap.values()) {
-                                        const realPath = building["rooms_href"].substring(2);
+                                        const realPath = building["building_href"].substring(2);
                                         // Log.trace("path is " + realPath);
                                         promiseArray.push(unzippedFiles.file(realPath)
-                                            .async("text").then(function (data: any) {
+                                            .async("string").then((data: any) => {
                                                 let originalData = parse5.parse(data);
                                                 try {
                                                     let span: any = originalData.childNodes[6].childNodes[3]
@@ -208,8 +212,8 @@ export class DatasetHelper {
                                                             let type: string;
                                                             let furniture: string;
                                                             let rhref: string;
-                                                            let tbody2 = this.traversalTree(originalData.childNodes);
-                                                            for (let tr of tbody2.childNodes) {
+                                                            let tbody2 = that.traversalTree(originalData.childNodes);
+                                                            for (let tr of tbody2) {
                                                                 if (tr.nodeName === "tr") {
                                                                     let child = tr.childNodes;
                                                                     if (!isNullOrUndefined(child)) {
@@ -322,9 +326,9 @@ export class DatasetHelper {
                                                                 }
                                                             }
                                                         } catch {
-                                                            let err = new InsightError("cannot find correct " +
-                                                                "info for this building " +
-                                                                validRoom["room_fullname"]);
+                                                            // let err = new InsightError("cannot find correct " +
+                                                            //     "info for this building " +
+                                                            //     validRoom["room_fullname"]);
                                                         }
 
                                                     }
@@ -356,8 +360,8 @@ export class DatasetHelper {
 
                                     }
                                 } catch {
-                                    let err = new InsightError("fail to add info");
-                                    reject(err);
+                                    // let err = new InsightError("fail to add info");
+                                    // reject(err);
                                 }
                             }).catch(() => {
                                 reject(new InsightError("Geo problem maybe???."));
@@ -406,13 +410,13 @@ export class DatasetHelper {
             const http = require("http");
             const link = "http://cs310.ugrad.cs.ubc.ca:11316/api/v1/project_d9b1b_i4f1b/" + addr.replace(" ", "%20");
             http.get(link, (response: any) => {
-                const {statusCode} = response;
+                // const {statusCode} = response;
                 // get server response
-                if (statusCode !== 200) {
-                    let err = new InsightError("Request Failed.\n" +
-                        `Status Code: ${statusCode}`);
-                    reject(err);
-                }
+                // if (statusCode !== 200) {
+                //     let err = new InsightError("Request Failed.\n" +
+                //         `Status Code: ${statusCode}`);
+                //     reject(err);
+                // }
                 response.setEncoding("utf8");
                 let originalData = "";
                 response.on("data", (chunk: any) => {
@@ -421,12 +425,14 @@ export class DatasetHelper {
                 response.on("end", () => {
                     try {
                         const parseResult = JSON.parse(originalData);
-                        // extract lat/lon
-                        info["building_lat"] = parseResult.lat;
-                        info["building_lon"] = parseResult.lon;
-                        // Log.trace("lat " + restInfo["rooms_lat"]);
-                        // Log.trace("lon " + restInfo["rooms_lon"]);
-                        fulfill(info);
+                        if (parseResult["error"]) {
+                            return reject(new InsightError("Geo error from geo server"));
+                        } else {
+                            // extract lat/lon
+                            info["building_lat"] = parseResult.lat;
+                            info["building_lon"] = parseResult.lon;
+                            return fulfill(info);
+                        }
                     } catch (err) {
                         err = new InsightError("Cannot write to disk");
                         reject(err);
