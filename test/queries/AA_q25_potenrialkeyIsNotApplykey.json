@@ -1,0 +1,19 @@
+{
+    "title": "Transformation: simple MAX",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "cpsc"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "max_Avg"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"max_Avg": {"MAX": "courses_avg"}}
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result":[]
+}

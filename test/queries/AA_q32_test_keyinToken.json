@@ -1,0 +1,46 @@
+{
+    "title": "keyinToken is not a string",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tab*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 350
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "maxSeats"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "maxSeats"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "maxSeats": {
+                        "MAX": 90
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result":[
+    ]
+}

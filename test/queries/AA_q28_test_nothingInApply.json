@@ -1,0 +1,17 @@
+{
+    "title": "nothing in apply",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "cpsc"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": []
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"cpsc"}]
+}
