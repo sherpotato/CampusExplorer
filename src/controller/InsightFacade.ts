@@ -54,6 +54,8 @@ export default class InsightFacade implements IInsightFacade {
                     }, (response: string[]) => {
                         return reject(response);
                     });
+            } else {
+                return reject(new InsightError("kind error"));
             }
         });
     }
