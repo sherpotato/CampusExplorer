@@ -214,6 +214,7 @@ export class DatasetHelper {
                                                     let seats: number;
                                                     let type: string;
                                                     let furniture: string;
+                                                    let rhref: string;
                                                     let tbody2 = that.traversalTree(originalData.childNodes);
                                                     for (let tr of tbody2) {
                                                         if (tr.nodeName === "tr") {
@@ -228,6 +229,8 @@ export class DatasetHelper {
                                                                             "number") {
                                                                             rnumber = td.childNodes[1]
                                                                                 .childNodes[0].value.trim();
+                                                                            rhref =
+                                                                                td.childNodes[1].attrs[0].value.trim();
                                                                         }
                                                                         if (attr === "views-field " +
                                                                             "views-field-field-room-capac" +
@@ -264,7 +267,8 @@ export class DatasetHelper {
                                                                 typeof tempBuilding["building_lon"] === "number" &&
                                                                 typeof seats === "number" &&
                                                                 typeof type === "string" &&
-                                                                typeof furniture === "string") {
+                                                                typeof furniture === "string" &&
+                                                            typeof rhref === "string") {
                                                                 const validRoomSec: {
                                                                     [key: string]:
                                                                         string | number
@@ -290,7 +294,7 @@ export class DatasetHelper {
                                                                     [id + "_furniture"]:
                                                                     furniture,
                                                                     [id + "_href"]:
-                                                                        tempBuilding["building_href"],
+                                                                        rhref,
                                                                 };
                                                                 validRooms.push(validRoomSec);
                                                             }
