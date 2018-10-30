@@ -424,42 +424,6 @@ export class PerformQueryHelper {
         return !(typeof q === "number" || typeof q === "string" || Array.isArray(q));
     }
 
-    private isNumberKey(inputNumberKey: string): boolean {
-        // try {
-            let prefix = inputNumberKey.split("_")[0];
-            let postfix = inputNumberKey.split("_")[1];
-            if (!(this.idName === prefix)) {
-                return false;
-            } else {
-                if (!(Object.values(NumberKey).includes(postfix))) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        // } catch (e) {
-        //     return false;
-        // }
-    }
-
-    private isStringKey(inputStringKey: string): boolean {
-        // try {
-            let prefix = inputStringKey.split("_")[0];
-            let postfix = inputStringKey.split("_")[1];
-            if (!(this.idName === prefix)) {
-                return false;
-            } else {
-                if (!(Object.values(StringKey).includes(postfix))) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        // } catch (e) {
-        //     return false;
-        // }
-    }
-
     private isValidStringInIS(inputString: string): boolean {
             return /^((\*)?[^*]*(\*)?)$/.test(inputString);
     }

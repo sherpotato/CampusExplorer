@@ -112,7 +112,7 @@ export class DatasetHelper {
                           datasetId: string[], validDataset: Map<string, any[]>): Promise<string[]> {
         return new Promise((fulfill, reject) => {
             let that = this;
-            let roomObs: any = [];
+            // let roomObs: any = [];
             let validRooms: any = [];
             let buildingmap: Map<string, any> = new Map<string, any>();
             let currZip = new JSZip();
@@ -165,7 +165,7 @@ export class DatasetHelper {
                                                 }
                                             }
                                         }
-                                        buildingmap.set(fullname, buildingInfo);
+                                        buildingmap.set(shortname, buildingInfo);
                                     }
                                 }
                             }
@@ -173,7 +173,7 @@ export class DatasetHelper {
                             async function setGeo() {
                                 for (let building  of buildingmap.values()) {
                                     await that.getLatAndLon(building).catch((e: any) => {
-                                        Log.trace(e);
+                                        // Log.trace(e);
                                     });
                                 }
 
@@ -203,13 +203,13 @@ export class DatasetHelper {
                                     for (let eachhtm of data) {
                                         try {
                                             let originalData = parse5.parse(eachhtm);
-                                            let span: any = originalData.childNodes[6].childNodes[3]
-                                                .childNodes[31].childNodes[10].childNodes[1].childNodes[3]
-                                                .childNodes[1].childNodes[3].childNodes[1].childNodes[1]
-                                                .childNodes[1].childNodes[1].childNodes[0];
-                                            let bName: any = span.childNodes[0].value.trim();
-                                            if (buildingmap.has(bName)) {
-                                                try {
+                                            // let span: any = originalData.childNodes[6].childNodes[3]
+                                            //     .childNodes[31].childNodes[10].childNodes[1].childNodes[3]
+                                            //     .childNodes[1].childNodes[3].childNodes[1].childNodes[1]
+                                            //     .childNodes[1].childNodes[1].childNodes[0];
+                                            // let bName: any = span.childNodes[0].value.trim();
+                                            // Log.trace(bName);
+                                            try {
                                                     let rnumber: string;
                                                     let seats: number;
                                                     let type: string;
@@ -235,8 +235,8 @@ export class DatasetHelper {
                                                                         if (attr === "views-field " +
                                                                             "views-field-field-room-capac" +
                                                                             "ity") {
-                                                                            seats = Number(td.
-                                                                                childNodes[0].value.trim());
+                                                                            seats = Number(td.childNodes[0].
+                                                                            value.trim());
                                                                         }
                                                                         if (attr === "views-field " +
                                                                             "views-field-field-room-type") {
@@ -252,7 +252,13 @@ export class DatasetHelper {
                                                                     }
                                                                 }
                                                             }
+                                                            let n = rhref.lastIndexOf("/");
+                                                            let result = rhref.substring(n + 1);
+                                                            let bName = result.split("-")[0];
+                                                            // Log.trace(bName);
+                                                            if (buildingmap.has(bName)) {
                                                             let tempBuilding = buildingmap.get(bName);
+                                                            // Log.trace(tempBuilding);
                                                             let rname = tempBuilding["building_shortname"]
                                                                 + "_" + rnumber;
                                                             if (typeof tempBuilding["building_fullname"] ===
@@ -268,7 +274,7 @@ export class DatasetHelper {
                                                                 typeof seats === "number" &&
                                                                 typeof type === "string" &&
                                                                 typeof furniture === "string" &&
-                                                            typeof rhref === "string") {
+                                                                typeof rhref === "string") {
                                                                 const validRoomSec: {
                                                                     [key: string]:
                                                                         string | number
@@ -294,22 +300,22 @@ export class DatasetHelper {
                                                                     [id + "_furniture"]:
                                                                     furniture,
                                                                     [id + "_href"]:
-                                                                        rhref,
+                                                                    rhref,
                                                                 };
                                                                 validRooms.push(validRoomSec);
                                                             }
+                                                         }
                                                         }
                                                     }
                                                 } catch (e) {
-                                                    Log.trace("fail to give a try");
+                                                    // Log.trace("fail to give a try");
                                                     // let err = new InsightError("cannot find correct " +
                                                     //     "info for this building " +
                                                     //     validRoom["room_fullname"]);
                                                 }
 
-                                            }
                                         } catch (e) {
-                                            Log.trace("fail to ");
+                                            // Log.trace("fail to ");
                                             // let err = new InsightError("no valid room for this");
                                             // reject(err);
                                         }
@@ -372,41 +378,13 @@ export class DatasetHelper {
         }
     }
 
-    public traversal(nodes: any[]): any[] {
-        let nodeListObject: any[] = [];
-        if (nodes === undefined) {
-            return nodeListObject;
-        } else {
-            for (let eachNode of nodes) {
-                if (eachNode.nodeName === "h2") {
-                    nodeListObject = eachNode.childNodes;
-                    return nodeListObject;
-                } else {
-                    nodeListObject = this.traversalTree(eachNode.childNodes);
-                    if (nodeListObject.length !== 0) {
-                        return nodeListObject;
-                    }
-                }
-            }
-            return nodeListObject;
-        }
-    }
-
     // get geoLocation of given address
-    // TODO : NEED TO MODIFIED!!!!!!!!!!!
     public getLatAndLon(info: any): Promise<any> {
         return new Promise((fulfill, reject) => {
             const addr = info["building_address"];
             const http = require("http");
             const link = "http://cs310.ugrad.cs.ubc.ca:11316/api/v1/project_d9b1b_i4f1b/" + addr.replace(" ", "%20");
             http.get(link, (response: any) => {
-                // const {statusCode} = response;
-                // get server response
-                // if (statusCode !== 200) {
-                //     let err = new InsightError("Request Failed.\n" +
-                //         `Status Code: ${statusCode}`);
-                //     reject(err);
-                // }
                 response.setEncoding("utf8");
                 let originalData = "";
                 response.on("data", (chunk: any) => {
