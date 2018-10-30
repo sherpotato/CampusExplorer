@@ -172,7 +172,7 @@ export class DatasetHelper {
 
                             async function setGeo() {
                                 for (let building  of buildingmap.values()) {
-                                    await that.getLatAndLon(building).catch((e: any) => {
+                                    await that.getLatAndLon(building).catch(() => {
                                         // Log.trace(e);
                                     });
                                 }
