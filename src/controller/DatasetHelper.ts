@@ -337,10 +337,7 @@ export class DatasetHelper {
                                             return reject(new InsightError("Fail to add dataset into cache."));
                                         }
                                     }
-                                }).catch(() => {
-                                let e = new InsightError("Fail to unzip the file.");
-                                reject(e);
-                            });
+                                });
 
                         }
                         // TODO
