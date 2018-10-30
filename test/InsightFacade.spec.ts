@@ -41,6 +41,11 @@ describe("InsightFacade Add/Remove Dataset", function () {
         missFieldInvalid: "./test/data/missFieldInvalid.zip",
         correctDataSet: "./test/data/correctDataSet.zip",
         rooms: "./test/data/rooms.zip",
+        brokenHTML: "./test/data/brokenHTML.zip",
+        correctHTML: "./test/data/correctHTML.zip",
+        zeroRoomSection: "./test/data/zeroRoomSection.zip",
+        pdfInRooms: "./test/data/pdfInRooms.zip",
+        emptyHTML: "./test/data/emptyHTML.zip",
     };
 
     let insightFacade: InsightFacade;
@@ -97,22 +102,9 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("Should add a valid rooms dataset", async function () {
-        const id: string = "rooms";
-        let response: string[];
-
-        try {
-            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
-        } catch (err) {
-            response = err;
-        } finally {
-            expect(response).to.deep.equal(["courses", id]);
-        }
-    });
-
     it("listDatasets0", async () => {
         let response = await insightFacade.listDatasets();
-        expect(response.length).to.deep.equal(2);
+        expect(response.length).to.deep.equal(1);
         expect(response[0].id).to.deep.equal("courses");
     });
 
@@ -484,6 +476,161 @@ describe("InsightFacade Add/Remove Dataset", function () {
         expect(response[2].id).to.deep.equal("manyType");
         expect(response[3].id).to.deep.equal("missFieldValid");
         expect(response[4].id).to.deep.equal("correctDataSet");
+    });
+
+    it("Should add a valid rooms dataset", async function () {
+        const id: string = "rooms";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal(["courses",
+                "multipleFolder", "manyType", "missFieldValid", "correctDataSet", id]);
+        }
+    });
+
+    it("listDatasets6", async () => {
+        let response = await insightFacade.listDatasets();
+        expect(response.length).to.deep.equal(6);
+        expect(response[0].id).to.deep.equal("courses");
+        expect(response[1].id).to.deep.equal("multipleFolder");
+        expect(response[2].id).to.deep.equal("manyType");
+        expect(response[3].id).to.deep.equal("missFieldValid");
+        expect(response[4].id).to.deep.equal("correctDataSet");
+        expect(response[5].id).to.deep.equal("rooms");
+    });
+
+    it("Should fail to add a un-existing room dataset, id = empty string", async () => {
+        const id: string = "";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a room dataset with id = null", async () => {
+        const id: string = null;
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a empty room ( invalid ) dataset", async () => {
+        const id: string = "emptyCase";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a broken HTML file ( invalid ) dataset", async () => {
+        const id: string = "brokenHTML";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a different kind of dataset, e.g rooms to courses", async () => {
+        const id: string = "correctHTML";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("should fail to add the existing rooms dataset with same id", async () => {
+        const id: string = "rooms";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a zero valid room section dataset", async () => {
+        const id: string = "zeroRoomSection";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a non zip file room dataset, e.g pdf", async () => {
+        const id: string = "nonZip";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a dataset with only pdf in rooms dataset", async () => {
+        const id: string = "pdfInRooms";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should fail to add a empty HTML file dataset", async () => {
+        const id: string = "emptyHTML";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
     });
 
     // it("small dataset", async () => {

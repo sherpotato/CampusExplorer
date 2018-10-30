@@ -1,0 +1,20 @@
+{
+    "title": "Transformation: simple SUM",
+    "query": {
+        "WHERE": {
+            "IS": {"courses_dept": "cpsc"}
+        },
+        "OPTIONS": {
+            "COLUMNS": ["courses_dept", "maxAvg"]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": ["courses_dept"],
+            "APPLY": [
+                {"maxAvg": {"SUM": "courses_avg"}}
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"cpsc","maxAvg":86189.91}]
+
+}

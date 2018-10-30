@@ -21,7 +21,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "369",
-  "manyType_year": 2015
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -45,7 +45,7 @@
   "manyType_fail": 1,
   "manyType_audit": 0,
   "manyType_uuid": "5928",
-  "manyType_year": 2013
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -69,7 +69,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "33532",
-  "manyType_year": 2010
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -93,7 +93,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "41183",
-  "manyType_year": 2007
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -117,7 +117,7 @@
   "manyType_fail": 4,
   "manyType_audit": 0,
   "manyType_uuid": "50205",
-  "manyType_year": 2009
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -141,7 +141,7 @@
   "manyType_fail": 1,
   "manyType_audit": 0,
   "manyType_uuid": "75274",
-  "manyType_year": 2012
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -165,7 +165,7 @@
   "manyType_fail": 2,
   "manyType_audit": 0,
   "manyType_uuid": "79983",
-  "manyType_year": 2016
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -189,7 +189,7 @@
   "manyType_fail": 1,
   "manyType_audit": 0,
   "manyType_uuid": "80567",
-  "manyType_year": 2011
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -237,7 +237,7 @@
   "manyType_fail": 9,
   "manyType_audit": 0,
   "manyType_uuid": "98676",
-  "manyType_year": 2014
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -261,7 +261,7 @@
   "manyType_fail": 3,
   "manyType_audit": 0,
   "manyType_uuid": "371",
-  "manyType_year": 2015
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -285,7 +285,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "5930",
-  "manyType_year": 2013
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -309,7 +309,7 @@
   "manyType_fail": 1,
   "manyType_audit": 0,
   "manyType_uuid": "33534",
-  "manyType_year": 2010
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -333,7 +333,7 @@
   "manyType_fail": 5,
   "manyType_audit": 0,
   "manyType_uuid": "41185",
-  "manyType_year": 2007
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -357,7 +357,7 @@
   "manyType_fail": 1,
   "manyType_audit": 0,
   "manyType_uuid": "50207",
-  "manyType_year": 2009
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -381,7 +381,7 @@
   "manyType_fail": 2,
   "manyType_audit": 0,
   "manyType_uuid": "75276",
-  "manyType_year": 2012
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -405,7 +405,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "80569",
-  "manyType_year": 2011
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -429,7 +429,7 @@
   "manyType_fail": 4,
   "manyType_audit": 0,
   "manyType_uuid": "98678",
-  "manyType_year": 2014
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -477,7 +477,7 @@
   "manyType_fail": 2,
   "manyType_audit": 0,
   "manyType_uuid": "375",
-  "manyType_year": 2015
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -537,7 +537,7 @@
   "manyType_fail": 1,
   "manyType_audit": 0,
   "manyType_uuid": "5935",
-  "manyType_year": 2013
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -597,7 +597,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "33539",
-  "manyType_year": 2010
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -645,7 +645,7 @@
   "manyType_fail": 1,
   "manyType_audit": 0,
   "manyType_uuid": "41189",
-  "manyType_year": 2007
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -705,7 +705,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "50212",
-  "manyType_year": 2009
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -765,7 +765,7 @@
   "manyType_fail": 2,
   "manyType_audit": 0,
   "manyType_uuid": "75281",
-  "manyType_year": 2012
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -813,7 +813,7 @@
   "manyType_fail": 0,
   "manyType_audit": 0,
   "manyType_uuid": "80573",
-  "manyType_year": 2011
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -909,7 +909,7 @@
   "manyType_fail": 2,
   "manyType_audit": 0,
   "manyType_uuid": "98686",
-  "manyType_year": 2014
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -957,7 +957,7 @@
   "manyType_fail": 41,
   "manyType_audit": 0,
   "manyType_uuid": "379",
-  "manyType_year": 2015
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -993,7 +993,7 @@
   "manyType_fail": 10,
   "manyType_audit": 0,
   "manyType_uuid": "79986",
-  "manyType_year": 2016
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -1029,7 +1029,7 @@
   "manyType_fail": 26,
   "manyType_audit": 0,
   "manyType_uuid": "382",
-  "manyType_year": 2015
+  "manyType_year": 1900
  },
  {
   "manyType_dept": "phys",
@@ -1161,6 +1161,6 @@
   "manyType_fail": 3,
   "manyType_audit": 0,
   "manyType_uuid": "393",
-  "manyType_year": 2015
+  "manyType_year": 1900
  }
 ]
