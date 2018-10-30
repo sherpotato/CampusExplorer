@@ -186,13 +186,13 @@ export class DatasetHelper {
                                 const realPath = building["building_href"].substring(2);
                                 // Log.trace("path is " + realPath);
                                 // let data = await unzippedFiles.file(realPath).async("string");
-                                try {
-                                    promiseArray.push(unzippedFiles.file(realPath)
+                                // try {
+                                promiseArray.push(unzippedFiles.file(realPath)
                                         .async("text"));
-                                } catch {
-                                    let e = new InsightError("non html");
-                                    reject(e);
-                                }
+                                // } catch {
+                                //     let e = new InsightError("non html");
+                                //     reject(e);
+                                // }
                             }
                             // } catch {
                             //     let err = new InsightError("fail to add info");
