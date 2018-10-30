@@ -13,6 +13,7 @@ export default class InsightFacade implements IInsightFacade {
 
     private datasetId: string[] = [];
     private validDataset: Map<string, any[]>;
+    private kindMap: Map<string, any> = new Map<string, any>();
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
@@ -40,6 +41,7 @@ export default class InsightFacade implements IInsightFacade {
             if (kind === "courses") {
                 DsHelper.addCourseDataset(id, content, this.datasetId, this.validDataset)
                     .then(  (response: string[]) => {
+                        this.kindMap.set(id, kind);
                         return fulfill(response);
                     }, (response: string[]) => {
                         return reject(response);
@@ -47,6 +49,7 @@ export default class InsightFacade implements IInsightFacade {
             } else if (kind === "rooms") {
                 DsHelper.addRoomDataset(id, content, this.datasetId, this.validDataset)
                     .then(  (response: string[]) => {
+                        this.kindMap.set(id, kind);
                         return fulfill(response);
                     }, (response: string[]) => {
                         return reject(response);
@@ -128,7 +131,7 @@ export default class InsightFacade implements IInsightFacade {
             for (const key of this.datasetId) {
                 let set = {
                     id: key,
-                    kind: InsightDatasetKind.Courses,
+                    kind: this.kindMap.get(key),
                     numRows: this.validDataset.get(key).length,
                 };
                 returnSet.push(set);

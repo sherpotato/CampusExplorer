@@ -106,13 +106,13 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.deep.equal(["courses", id]);
         }
     });
 
-    it("listDatasets", async () => {
+    it("listDatasets0", async () => {
         let response = await insightFacade.listDatasets();
-        expect(response.length).to.deep.equal(1);
+        expect(response.length).to.deep.equal(2);
         expect(response[0].id).to.deep.equal("courses");
     });
 
@@ -298,7 +298,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("listDatasets", async () => {
+    it("listDatasets1", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(2);
         expect(response[0].id).to.deep.equal("courses");
@@ -319,7 +319,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("listDatasets", async () => {
+    it("listDatasets2", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(3);
         expect(response[0].id).to.deep.equal("courses");
@@ -369,7 +369,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("listDatasets", async () => {
+    it("listDatasets3", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(4);
         expect(response[0].id).to.deep.equal("courses");
@@ -407,7 +407,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("listDatasets", async () => {
+    it("listDatasets4", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(3);
         expect(response[0].id).to.deep.equal("courses");
@@ -476,7 +476,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("listDatasets", async () => {
+    it("listDatasets5", async () => {
         let response = await insightFacade.listDatasets();
         expect(response.length).to.deep.equal(5);
         expect(response[0].id).to.deep.equal("courses");
@@ -549,6 +549,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        rooms: "./test/data/rooms.zip",
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
