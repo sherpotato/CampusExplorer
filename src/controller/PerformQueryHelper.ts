@@ -240,29 +240,27 @@ export class PerformQueryHelper {
         let direction = sort["dir"];
         let orderKeys = sort["keys"];
         if (direction === "UP") {
-            for (let eachKey of orderKeys) {
-                filterData.sort((a: any, b: any) => {
+            filterData.sort((a: any, b: any) => {
+                    for (let eachKey of orderKeys) {
                     if (a[eachKey] > b[eachKey]) {
                         return 1;
                     } else if (a[eachKey] < b[eachKey]) {
                         return -1;
-                    } else {
-                        return 0;
                     }
-                });
-            }
+                    }
+                    return 0;
+            });
         } else {
-            for (let eachKey of orderKeys) {
-                filterData.sort((a: any, b: any) => {
+            filterData.sort((a: any, b: any) => {
+                for (let eachKey of orderKeys) {
                     if (a[eachKey] > b[eachKey]) {
                         return -1;
                     } else if (a[eachKey] < b[eachKey]) {
                         return 1;
-                    } else {
-                        return 0;
                     }
-                });
-            }
+                }
+                return 0;
+            });
         }
         return filterData;
     }
@@ -669,7 +667,6 @@ export class PerformQueryHelper {
                         this.applyKeys.push(potentialKey);
                         this.keysInTransformation.add(potentialKey);
                     }
-
                 } else {
                     return false;
                 }
@@ -861,6 +858,21 @@ export class PerformQueryHelper {
         // const CourseKeyArray: any[] = [this.idName + "_dept", this.idName + "_id", this.idName + "_avg",
         //     this.idName + "_instructor", this.idName + "_title", this.idName + "_pass",
         //     this.idName + "_fail", this.idName + "_audit", this.idName + "_uuid", this.idName + "_year"];
+        //
+        // let toDo: any[];
+        // if (this.dataType === "rooms") {
+        //     toDo = RoomKeyArray.concat(keysInApply);
+        // } else {
+        //     toDo = CourseKeyArray.concat(keysInApply);
+        // }
+        //
+        // for (let eachsection of results) {
+        //     for (let t of toDo) {
+        //         if (!columns.includes(t)) {
+        //             delete eachsection[t];
+        //         }
+        //     }
+        // }
 
         return response;
 
