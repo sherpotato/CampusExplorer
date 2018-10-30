@@ -663,8 +663,13 @@ export class PerformQueryHelper {
                 }
                 let potentialKey = Object.keys(applyRule)[0];
                 if (this.isApplyKeys(potentialKey)) {
-                    this.applyKeys.push(potentialKey);
-                    this.keysInTransformation.add(potentialKey);
+                    if (this.applyKeys.includes(potentialKey)) {
+                        return false;
+                    } else {
+                        this.applyKeys.push(potentialKey);
+                        this.keysInTransformation.add(potentialKey);
+                    }
+
                 } else {
                     return false;
                 }
@@ -856,21 +861,6 @@ export class PerformQueryHelper {
         // const CourseKeyArray: any[] = [this.idName + "_dept", this.idName + "_id", this.idName + "_avg",
         //     this.idName + "_instructor", this.idName + "_title", this.idName + "_pass",
         //     this.idName + "_fail", this.idName + "_audit", this.idName + "_uuid", this.idName + "_year"];
-        //
-        // let toDo: any[];
-        // if (this.dataType === "rooms") {
-        //     toDo = RoomKeyArray.concat(keysInApply);
-        // } else {
-        //     toDo = CourseKeyArray.concat(keysInApply);
-        // }
-        //
-        // for (let eachsection of results) {
-        //     for (let t of toDo) {
-        //         if (!columns.includes(t)) {
-        //             delete eachsection[t];
-        //         }
-        //     }
-        // }
 
         return response;
 
