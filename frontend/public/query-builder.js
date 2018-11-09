@@ -8,11 +8,13 @@
 CampusExplorer.buildQuery = function() {
     let query = {};
     // TODO: implement!
+
     let content = document.getElementsByClassName("tab-panel active")[0];
 
     // Find id
     let preFix = content.getAttribute("data-type");
 
+    // For WHERE
     // Find logical type
     let logicalType = findLogicalType(content.getElementsByClassName("control-group condition-type")[0]);
 
@@ -29,6 +31,48 @@ CampusExplorer.buildQuery = function() {
         // empty where
         query["WHERE"] = {};
     }
+
+    // For OPTIONS
+    let options = {};
+    // Find Columns
+    let columns = content.getElementsByClassName("form-group columns")[0].getElementsByClassName("control-group")[0];
+    let columnsKey = columns.getElementsByClassName("control field");
+    let columnsApplyKey = columns.getElementsByClassName("control transformation");
+    let columnArray = [];
+    for (let eachColumnsKey of columnsKey){
+        if (eachColumnsKey.getElementsByTagName("input")[0].checked) {
+            columnArray.push(preFix + "_" + eachColumnsKey.getElementsByTagName("input")[0].value);
+        }
+    }
+    for (let eachColumnsApplyKey of columnsApplyKey){
+        if (eachColumnsApplyKey.getElementsByTagName("input")[0].checked) {
+            columnArray.push(eachColumnsApplyKey.getElementsByTagName("input")[0].value);
+        }
+    }
+    options["COLUMNS"] = columnArray;
+
+    // Find Order
+    let orderSelection = content.getElementsByClassName("form-group order")[0].getElementsByClassName("control-group")[0];
+    let orderKeys = orderSelection.getElementsByClassName("control order fields")[0].getElementsByTagName("select")[0].selectedOptions;
+    let controlDescending = orderSelection.getElementsByClassName("control descending")[0].getElementsByTagName("input")[0].checked;
+    /*
+    // Check if the order has to be existed
+    if (!(orderKeys.length === 0 && !controlDescending)) {
+        let order = {};
+        if (orderKeys.length > 0) {
+
+            if (controlDescending) {
+                // DOWN
+            } else{
+                // UP
+            }
+        } else {
+            // (orderKeys.length === 0 && controlDescending)
+
+        }
+        options["ORDER"] = order;
+    }*/
+    query["OPTIONS"] = options;
 
     console.log("CampusExplorer.buildQuery not implemented yet.");
     return query;
@@ -50,7 +94,7 @@ findLogicalType = function(condition){
     }
 };
 
-// return a query
+// According to one condition, return a query
 oneCondition = function (oneCondition, preFix) {
     let returnOb = {};
     let controlNot = oneCondition.getElementsByClassName("control not")[0].getElementsByTagName("input")[0].checked;
