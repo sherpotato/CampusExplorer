@@ -24,7 +24,7 @@ CampusExplorer.buildQuery = function() {
         query["WHERE"] = multipleCondition(logicalCondition, logicalType, preFix);
     } else if (logicalCondition.length === 1) {
         if (logicalType === "NOT"){
-            query["WHERE"] = {[logicalType]:oneCondition(logicalCondition[0], preFix)};
+            query["WHERE"] = {[logicalType]: oneCondition(logicalCondition[0], preFix)};
         }
         query["WHERE"] = oneCondition(logicalCondition[0], preFix);
     } else {
@@ -55,26 +55,59 @@ CampusExplorer.buildQuery = function() {
     let orderSelection = content.getElementsByClassName("form-group order")[0].getElementsByClassName("control-group")[0];
     let orderKeys = orderSelection.getElementsByClassName("control order fields")[0].getElementsByTagName("select")[0].selectedOptions;
     let controlDescending = orderSelection.getElementsByClassName("control descending")[0].getElementsByTagName("input")[0].checked;
-    /*
+
     // Check if the order has to be existed
     if (!(orderKeys.length === 0 && !controlDescending)) {
         let order = {};
+        let orderKeyArray = [];
         if (orderKeys.length > 0) {
-
+            for (let eachKey of orderKeys) {
+                if (eachKey.className === "transformation") {
+                    orderKeyArray.push(eachKey.value);
+                } else {
+                    orderKeyArray.push(preFix + "_" + eachKey.value);
+                }
+            }
             if (controlDescending) {
                 // DOWN
+                order = {["dir"]: "DOWN",
+                        ["keys"]: orderKeyArray};
             } else{
                 // UP
+                order = {["dir"]: "UP",
+                        ["keys"]: orderKeyArray};
             }
         } else {
             // (orderKeys.length === 0 && controlDescending)
+            order = {["dir"]: "DOWN",
+                    ["keys"]: orderKeyArray};
 
         }
         options["ORDER"] = order;
-    }*/
+    }
     query["OPTIONS"] = options;
 
-    console.log("CampusExplorer.buildQuery not implemented yet.");
+    // Find Transformation
+    // Find Groups
+    let groups = content.getElementsByClassName("form-group groups")[0].getElementsByClassName("control-group")[0];
+    let checkedGroup = groups.getElementsByTagName("input");
+    let groupArray = [];
+    for (let eachCheckedGroup of checkedGroup){
+        if (eachCheckedGroup.checked){
+            groupArray.push(preFix + "_" + eachCheckedGroup.value);
+        }
+    }
+    // Find Apply
+    let apply = content.getElementsByClassName("form-group transformations")[0].getElementsByClassName("control-group transformation");
+    let applyArray = findApply(apply, preFix);
+
+    // Check if it is not an empty transformation. If it is empty , there is no need to show transformation
+    if (!(apply.length === 0 && groupArray.length === 0)){
+        query["TRANSFORMATIONS"] = {["GROUP"]: groupArray,
+                                    ["APPLY"]: applyArray};
+    }
+
+    console.log(JSON.stringify(query));
     return query;
 };
 
@@ -105,9 +138,9 @@ oneCondition = function (oneCondition, preFix) {
     if (operators !== "IS") {
         term = Number(term);
     }
-    returnOb = {[operators]:{[field]:term}};
+    returnOb = {[operators]: {[field]: term}};
     if (controlNot) {
-        returnOb = {["NOT"]:returnOb};
+        returnOb = {["NOT"]: returnOb};
     }
     return returnOb;
 };
@@ -119,10 +152,27 @@ multipleCondition = function(logicalCondition, logicalType, preFix){
         conditionArray.push(this.oneCondition(eachLogicalcondition, preFix));
     }
     if (logicalType === "NOT"){
-        returnOb = {[logicalType]:{["OR"]:conditionArray}};
+        returnOb = {[logicalType]:{["OR"]: conditionArray}};
     } else {
-        returnOb = {[logicalType]:conditionArray};
+        returnOb = {[logicalType]: conditionArray};
     }
     return returnOb;
 };
+
+findApply = function(apply,preFix) {
+    let applyArray = [];
+    if (apply.length > 0) {
+        let applyArray = [];
+        for (let eachApply of apply) {
+            let applyRule = {};
+            let applykey = eachApply.getElementsByClassName("control term")[0].getElementsByTagName("input")[0].value;
+            let applyToken = eachApply.getElementsByClassName("control operators")[0].getElementsByTagName("select")[0].selectedOptions[0].value;
+            let applyField = preFix + "_" + eachApply.getElementsByClassName("control fields")[0].getElementsByTagName("select")[0].selectedOptions[0].value;
+            applyRule = {[applykey]: {[applyToken]: applyField}};
+            applyArray.push(applyRule);
+        }
+    }
+    return applyArray;
+};
+
 
