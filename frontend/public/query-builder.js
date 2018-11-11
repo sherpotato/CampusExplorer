@@ -51,7 +51,7 @@ CampusExplorer.buildQuery = function() {
     }
     options["COLUMNS"] = columnArray;
 
-    // Find Order
+    //Find Order
     let orderSelection = content.getElementsByClassName("form-group order")[0].getElementsByClassName("control-group")[0];
     let orderKeys = orderSelection.getElementsByClassName("control order fields")[0].getElementsByTagName("select")[0].selectedOptions;
     let controlDescending = orderSelection.getElementsByClassName("control descending")[0].getElementsByTagName("input")[0].checked;
@@ -162,7 +162,6 @@ multipleCondition = function(logicalCondition, logicalType, preFix){
 findApply = function(apply,preFix) {
     let applyArray = [];
     if (apply.length > 0) {
-        let applyArray = [];
         for (let eachApply of apply) {
             let applyRule = {};
             let applykey = eachApply.getElementsByClassName("control term")[0].getElementsByTagName("input")[0].value;
