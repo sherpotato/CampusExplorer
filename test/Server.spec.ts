@@ -56,6 +56,24 @@ describe("Facade D3", function () {
         }
     });
     // */
+    it("Fail to Put test for courses dataset", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .put("/dataset/courses/hello")
+                .attach("body", "./test/data/correctDataSet.zip", "correctDataSet.zip")
+                .then(function (res: any) {
+                    // some logging here please!
+                    expect.fail();
+                })
+                .catch(function (err) {
+                    // some logging here please!
+                    // expect.fail();
+                    expect(err.status).to.deep.equal(400);
+                });
+        } catch (err) {
+            // and some more logging here!
+        }
+    });
 
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });
