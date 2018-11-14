@@ -9,6 +9,7 @@ describe("Facade D3", function () {
 
     let facade: InsightFacade = null;
     let server: Server = null;
+    this.timeout(10000);
 
     chai.use(chaiHttp);
 
@@ -16,10 +17,12 @@ describe("Facade D3", function () {
         facade = new InsightFacade();
         server = new Server(4321);
         // TODO: start server here once and handle errors properly
+        server.start();
     });
 
     after(function () {
         // TODO: stop server here once!
+        server.stop();
     });
 
     beforeEach(function () {
@@ -41,7 +44,8 @@ describe("Facade D3", function () {
                 .attach("body", "./test/data/courses.zip", "courses.zip")
                 .then(function (res: any) {
                     // some logging here please!
-                    expect(res.status).to.be.equal(200);
+                    expect(res.status).to.deep.equal(200);
+                    expect(res.body.result).to.deep.equal(["courses"]);
                 })
                 .catch(function (err) {
                     // some logging here please!
