@@ -141,7 +141,7 @@ export default class Server {
         let zipFileString = new Buffer(req.params.body).toString("base64");
         let datasetID = req.params.id;
         let datasetKind = req.params.kind;
-        Server.hotpot.addDataset(datasetID, zipFileString, datasetKind).then((response: string[]) => {
+        Server.hotpot.addDataset(datasetID, zipFileString, datasetKind).then((response: any) => {
             res.json(200, {result: response});
             return next();
         }).catch((err: InsightError) => {
