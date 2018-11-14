@@ -56,7 +56,7 @@ describe("Facade D3", function () {
         }
     });
     // */
-    it("Fail to Put test for courses dataset", function () {
+    it("Fail to Put test for correctDataSet dataset", function () {
         try {
             return chai.request("http://localhost:4321")
                 .put("/dataset/courses/hello")

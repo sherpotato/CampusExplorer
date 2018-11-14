@@ -138,16 +138,22 @@ export default class Server {
 
     private static putHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("START PUT");
-        let zipFileString = new Buffer(req.params.body).toString("base64");
-        let datasetID = req.params.id;
-        let datasetKind = req.params.kind;
-        Server.hotpot.addDataset(datasetID, zipFileString, datasetKind).then((response: any) => {
-            res.json(200, {result: response});
+        try {
+            let zipFileString = new Buffer(req.params.body).toString("base64");
+            let datasetID = req.params.id;
+            let datasetKind = req.params.kind;
+            Server.hotpot.addDataset(datasetID, zipFileString, datasetKind).then((response: any) => {
+                res.json(200, {result: response});
+                return next();
+            }).catch((err: Error) => {
+                res.json(400, {error: err.message});
+                return next();
+            });
+        } catch (err) {
+            res.json(400, {error: err.message});
             return next();
-        }).catch((err: InsightError) => {
-            res.json(400, {error: err});
-            return next();
-        });
+        }
+
     }
 
 }
