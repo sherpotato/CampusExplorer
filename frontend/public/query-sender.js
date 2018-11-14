@@ -7,6 +7,7 @@
 CampusExplorer.sendQuery = function (query) {
     return new Promise(function (fulfill, reject) {
         // TODO: implement!
+        // reffrence piazza cid=1431
         try{
             let xhr = new XMLHttpRequest();
             xhr.open("POST", 'http://localhost:4321/query', true);

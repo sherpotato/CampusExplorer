@@ -5,6 +5,8 @@
 import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
+import InsightFacade from "../controller/InsightFacade";
+import {InsightError} from "../controller/IInsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
@@ -13,6 +15,7 @@ export default class Server {
 
     private port: number;
     private rest: restify.Server;
+    private static hotpot: any = new InsightFacade();
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
@@ -44,6 +47,7 @@ export default class Server {
      */
     public start(): Promise<boolean> {
         const that = this;
+        let hotpot = new InsightFacade();
         return new Promise(function (fulfill, reject) {
             try {
                 Log.info("Server::start() - start");
@@ -64,6 +68,8 @@ export default class Server {
                 that.rest.get("/echo/:msg", Server.echo);
 
                 // NOTE: your endpoints should go here
+                // TODO
+                that.rest.put("/dataset/:id/:kind", Server.putHelper);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);
@@ -128,6 +134,19 @@ export default class Server {
             res.end();
             return next();
         });
+    }
+
+    private static putHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("START PUT");
+        let zipFileString = new Buffer(req.params.body).toString("base64");
+        let datasetID = req.params.id;
+        let datasetKind = req.params.kind;
+        this.hotpot.addDataset(datasetID, zipFileString, datasetKind).then((response: string[]) => {
+            res.json(200, {result: response});
+            }).catch((err: InsightError) => {
+            res.json(400, {error: err});
+        });
+        return next();
     }
 
 }

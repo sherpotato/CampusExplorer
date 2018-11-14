@@ -2,7 +2,7 @@ import Server from "../src/rest/Server";
 
 import InsightFacade from "../src/controller/InsightFacade";
 import chai = require("chai");
-
+import {expect} from "chai";
 import chaiHttp = require("chai-http");
 
 describe("Facade D3", function () {
@@ -33,15 +33,15 @@ describe("Facade D3", function () {
     // TODO: read your courses and rooms datasets here once!
 
     // Hint on how to test PUT requests
-    /*
+    // /*
     it("PUT test for courses dataset", function () {
         try {
-            return chai.request(URL)
-                .put(YOUR_PUT_URL)
-                .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
-                .then(function (res: Response) {
+            return chai.request("http://localhost:4321")
+                .put("/dataset/courses/courses")
+                .attach("body", "./test/data/courses.zip", "courses.zip")
+                .then(function (res: any) {
                     // some logging here please!
-                    expect(res.status).to.be.equal(204);
+                    expect(res.status).to.be.equal(200);
                 })
                 .catch(function (err) {
                     // some logging here please!
@@ -51,7 +51,7 @@ describe("Facade D3", function () {
             // and some more logging here!
         }
     });
-    */
+    // */
 
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });
