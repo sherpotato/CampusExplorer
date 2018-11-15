@@ -75,5 +75,24 @@ describe("Facade D3", function () {
         }
     });
 
+    it("DELETE test for courses dataset", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .del("/dataset/courses")
+                // .attach("body", "./test/data/courses.zip", "courses.zip")
+                .then(function (res: any) {
+                    // some logging here please!
+                    expect(res.status).to.be.equal(200);
+                    // expect(res.body).to.be.deep.equal("courses");
+                })
+                .catch(function (err) {
+                    // some logging here please!
+                    expect.fail();
+                });
+        } catch (err) {
+            // and some more logging here!
+        }
+    });
+
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });

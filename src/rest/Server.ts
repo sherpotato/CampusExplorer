@@ -6,7 +6,6 @@ import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
 import InsightFacade from "../controller/InsightFacade";
-import {InsightError} from "../controller/IInsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
@@ -70,6 +69,8 @@ export default class Server {
                 // NOTE: your endpoints should go here
                 // TODO
                 that.rest.put("/dataset/:id/:kind", Server.putHelper);
+
+                that.rest.del("/dataset/:id", Server.deleteHelper);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);
@@ -153,7 +154,26 @@ export default class Server {
             res.json(400, {error: err.message});
             return next();
         }
+    }
 
+    private static deleteHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("START DELETE");
+        try {
+            let delid: string = req.params.id;
+            Server.hotpot.removeDataset(delid).then((retid: any) => {
+                res.json(200, {result: retid});
+                Log.trace("IN THE SUCCESS DELETE");
+                return next();
+            }).catch((err: Error) => {
+                res.json(400, {error: err.message});
+                Log.trace("fail to delete");
+                return next();
+            });
+        } catch (err) {
+            Log.error("Server::deleteHelper(..) - ERROR: " + err);
+            res.json(404, {error: err.message});
+            return next();
+        }
     }
 
 }
