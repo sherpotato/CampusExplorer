@@ -14,5 +14,5 @@ document.getElementById('submit-button').addEventListener('click', function() {
 
     CampusExplorer.sendQuery(query).then( (res) => {
         CampusExplorer.renderResult(JSON.parse(res));
-    })
+    });
 });

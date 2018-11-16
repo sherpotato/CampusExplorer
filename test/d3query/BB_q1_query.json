@@ -1,0 +1,26 @@
+{
+    "WHERE": {
+        "OR": [
+            {
+                "NOT": {
+                    "LT": {
+                        "courses_avg": 99
+                    }
+                }
+            },
+            {
+                "EQ": {
+                    "courses_avg": 100
+                }
+            }
+        ]
+    },
+    "OPTIONS": {
+        "COLUMNS": [
+            "courses_dept",
+            "courses_id",
+            "courses_avg"
+        ],
+        "ORDER": "courses_avg"
+    }
+}

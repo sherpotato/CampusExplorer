@@ -6,6 +6,7 @@ import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
 import InsightFacade from "../controller/InsightFacade";
+import {InsightError, NotFoundError} from "../controller/IInsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
@@ -71,6 +72,10 @@ export default class Server {
                 that.rest.put("/dataset/:id/:kind", Server.putHelper);
 
                 that.rest.del("/dataset/:id", Server.deleteHelper);
+
+                that.rest.post("/query", Server.postHelper);
+
+                that.rest.get("/datasets", Server.getHelper);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);
@@ -165,15 +170,54 @@ export default class Server {
                 Log.trace("IN THE SUCCESS DELETE");
                 return next();
             }).catch((err: Error) => {
-                res.json(400, {error: err.message});
+                if (err instanceof InsightError) {
+                    res.json(400, {error: err.message});
+                    }
+                if (err instanceof NotFoundError) {
+                    res.json(404, {error: err.message});
+                    }
                 Log.trace("fail to delete");
                 return next();
             });
         } catch (err) {
             Log.error("Server::deleteHelper(..) - ERROR: " + err);
-            res.json(404, {error: err.message});
+            // TODO: do we have to use catch
             return next();
         }
     }
 
+    private static postHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("START POST");
+        try {
+            let query = req.params;
+            Server.hotpot.performQuery(query).then((ret: any[]) => {
+                res.json(200, {result: ret});
+                Log.trace("IN THE SUCCESS PERFORM");
+                return next();
+            }).catch((err: Error) => {
+                res.json(400, {error: err.message});
+                Log.trace("fail to delete");
+                return next();
+            });
+        } catch (err) {
+            Log.error("Server::postHelper(..) - ERROR: " + err);
+            // TODO: do we have to use catch
+            return next();
+        }
+    }
+
+    private static getHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("START get listdataset");
+        try {
+            Server.hotpot.listDatasets().then((ret: any[]) => {
+                res.json(200, {result: ret});
+                Log.trace("IN THE SUCCESS PERFORM");
+                return next();
+            });
+        } catch (err) {
+            Log.error("Server::getHelper(..) - ERROR: " + err);
+            // TODO: do we have to use catch
+            return next();
+        }
+    }
 }

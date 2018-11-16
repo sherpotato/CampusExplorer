@@ -1,0 +1,10 @@
+{
+    "WHERE": {
+        "NOT": {
+            "LT":{
+                "courses_avg":99.1
+            }
+        }
+    },
+    "OPTIONS": 1
+}
