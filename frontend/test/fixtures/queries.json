@@ -1,4 +1,5 @@
 {
     "query1":{"WHERE": {"IS": {"courses_dept": "cpsc"} }, "OPTIONS": {"COLUMNS": ["courses_dept", "courses_id"], "ORDER": "courses_id"} },
     "query2":{"WHERE":{"IS":{"courses_dept":"cpsc"}},"OPTIONS":{"COLUMNS":["courses_dept","courses_id"],"ORDER":{"dir":"DOWN","keys":["courses_year","apple","orange"]}},"TRANSFORMATIONS":{"GROUP":[],"APPLY":[{"apple":{"COUNT":"courses_audit"}},{"orange":{"COUNT":"courses_audit"}}]}},
+    "query3":{"WHERE":{},"OPTIONS":{"COLUMNS":["rooms_lon","rooms_name","asdf"],"ORDER":{"dir":"UP","keys":["rooms_lat"]}},"TRANSFORMATIONS":{"GROUP":["rooms_lat"],"APPLY":[{"asdf":{"COUNT":"rooms_address"}}]}}
 }

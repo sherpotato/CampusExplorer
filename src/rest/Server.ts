@@ -163,9 +163,9 @@ export default class Server {
 
     private static deleteHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("START DELETE");
-        try {
-            let delid: string = req.params.id;
-            Server.hotpot.removeDataset(delid).then((retid: any) => {
+        // try {
+        let delid: string = req.params.id;
+        Server.hotpot.removeDataset(delid).then((retid: any) => {
                 res.json(200, {result: retid});
                 Log.trace("IN THE SUCCESS DELETE");
                 return next();
@@ -179,18 +179,18 @@ export default class Server {
                 Log.trace("fail to delete");
                 return next();
             });
-        } catch (err) {
-            Log.error("Server::deleteHelper(..) - ERROR: " + err);
-            // TODO: do we have to use catch
-            return next();
-        }
+        // } catch (err) {
+        //     Log.error("Server::deleteHelper(..) - ERROR: " + err);
+        //     // TODO: do we have to use catch
+        //     return next();
+        // }
     }
 
     private static postHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("START POST");
-        try {
-            let query = req.params;
-            Server.hotpot.performQuery(query).then((ret: any[]) => {
+        // try {
+        let query = req.params;
+        Server.hotpot.performQuery(query).then((ret: any[]) => {
                 res.json(200, {result: ret});
                 Log.trace("IN THE SUCCESS PERFORM");
                 return next();
@@ -199,25 +199,25 @@ export default class Server {
                 Log.trace("fail to delete");
                 return next();
             });
-        } catch (err) {
-            Log.error("Server::postHelper(..) - ERROR: " + err);
-            // TODO: do we have to use catch
-            return next();
-        }
+        // } catch (err) {
+        //     Log.error("Server::postHelper(..) - ERROR: " + err);
+        //     // TODO: do we have to use catch
+        //     return next();
+        // }
     }
 
     private static getHelper(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("START get listdataset");
-        try {
-            Server.hotpot.listDatasets().then((ret: any[]) => {
+        // try {
+        Server.hotpot.listDatasets().then((ret: any[]) => {
                 res.json(200, {result: ret});
                 Log.trace("IN THE SUCCESS PERFORM");
                 return next();
             });
-        } catch (err) {
-            Log.error("Server::getHelper(..) - ERROR: " + err);
-            // TODO: do we have to use catch
-            return next();
-        }
+        // } catch (err) {
+        //     Log.error("Server::getHelper(..) - ERROR: " + err);
+        //     // TODO: do we have to use catch
+        //     return next();
+        // }
     }
 }
