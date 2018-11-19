@@ -191,5 +191,40 @@ describe("Facade D3", function () {
             // and some more logging here!
         }
     });
+
+    it("get test for getSatic", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .get("/index.html")
+                .then(function (res: any) {
+                    // some logging here please!
+                    expect(res.status).to.deep.equal(200);
+                })
+                .catch(function (err) {
+                    // some logging here please!
+                    expect.fail();
+                });
+        } catch (err) {
+            // and some more logging here!
+        }
+    });
+
+    it("get test for echo", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .get("/echo/hehehe")
+                .then(function (res: any) {
+                    // some logging here please!
+                    expect(res.status).to.deep.equal(200);
+                })
+                .catch(function (err) {
+                    // some logging here please!
+                    expect.fail();
+                });
+        } catch (err) {
+            // and some more logging here!
+        }
+    });
+
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });
